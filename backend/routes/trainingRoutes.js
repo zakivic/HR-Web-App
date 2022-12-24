@@ -12,12 +12,12 @@ router.get('/', TrainingController.getAllTrainings);
 router.get('/:id', TrainingController.getTraining);
 
 // POST a new training
-router.post('/', TrainingController.createTraining);
+router.post('/create-training', TrainingController.createTraining);
 
 // PATCH an existing training
-router.patch('/:id', TrainingController.updateTraining);
+router.patch('/update-training/:id', TrainingController.updateTraining);
 
 // DELETE an existing training
-router.delete('/:id', TrainingController.deleteTraining);
+router.delete('/delete-training/:id', TrainingController.deleteTraining);
 
 export default router;
