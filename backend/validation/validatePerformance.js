@@ -29,7 +29,5 @@ export const validatePerformance = (performanceReview) => {
    errors.push({ field: 'overallRating', message: 'Invalid Overall Rating' });
   }
 
- return {
-  errors
- };
+ return errors;
 };

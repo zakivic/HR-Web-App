@@ -55,7 +55,7 @@ export const createPerformanceReview = async (req, res) => {
   }
 
   // Validate the fields format and content
-  const { errors } = validatePerformance(req.body);
+  const errors = validatePerformance(req.body);
   if (errors.length > 0) {
     return res.status(400).json({ errors });
   }
@@ -95,7 +95,7 @@ export const updatePerformanceReview = async (req, res) => {
   }
 
   // Validate the fields format and content
-  const { errors } = validatePerformance(req.body);
+  const errors = validatePerformance(req.body);
   if (errors.length > 0) {
     return res.status(400).json({ errors });
   }
