@@ -120,6 +120,11 @@ export const createEmployee = async (req, res) => {
 };
 
 export const updateEmployee = async (req, res) => {
+
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ message: 'Invalid Employee ID' });
+  }
+
   // Validate the fields format and content
   const { errors } = validateEmployee(req.body);
   if (errors.length > 0) {

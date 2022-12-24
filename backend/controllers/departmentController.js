@@ -16,7 +16,7 @@ export const getAllDepartments = async (req, res) => {
 export const getDepartment = async (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ message: 'Invalid Employee ID' });
+    return res.status(400).json({ message: 'Invalid Department ID' });
   }
 
   try {
@@ -66,6 +66,10 @@ export const createDepartment = async (req, res) => {
 };
 
 export const updateDepartment = async (req, res) => {
+
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ message: 'Invalid Department ID' });
+  }
     // Validate the fields format and content
     const { errors } = validateDepartment(req.body);
     if (errors.length > 0) {
@@ -88,7 +92,7 @@ export const updateDepartment = async (req, res) => {
 export const deleteDepartment = async (req, res) => {
 
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ message: 'Invalid Employee ID' });
+    return res.status(400).json({ message: 'Invalid Department ID' });
   }
 
     try {

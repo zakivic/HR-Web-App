@@ -12,6 +12,11 @@ export const getAllPerformanceReviews = async (req, res) => {
 };
 
 export const getPerformanceReview = async (req, res) => {
+
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ message: 'Invalid Performance ID' });
+  }
+
   try {
     const performanceReview = await Performance.findById(req.params.id);
     if (performanceReview == null) {
@@ -127,6 +132,11 @@ export const updatePerformanceReview = async (req, res) => {
 };
 
 export const deletePerformanceReview = async (req, res) => {
+
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ message: 'Invalid Performance ID' });
+  }
+
   try {
     const deletedPerformanceReview = await Performance.findByIdAndDelete(req.params.id);
     if (deletedPerformanceReview == null) {
