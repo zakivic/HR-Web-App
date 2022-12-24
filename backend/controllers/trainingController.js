@@ -1,4 +1,7 @@
+import mongoose from 'mongoose';
+
 import Training from '../models/trainingModel.js';
+import { validateTraining } from '../validation/validateTraining.js';
 
 export const getAllTrainings = async (req, res) => {
   try {
@@ -10,6 +13,11 @@ export const getAllTrainings = async (req, res) => {
 };
 
 export const getTraining = async (req, res) => {
+
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ message: 'Invalid Training ID' });
+  }
+
   try {
     const training = await Training.findById(req.params.id);
     if (training == null) {
@@ -44,38 +52,20 @@ export const createTraining = async (req, res) => {
     return;
   }
 
-  const {
-    name,
-    instructor,
-    startDate,
-    endDate,
-    location,
-    employees
-  } = req.body;
-
-const validStartDate = new Date(startDate);
-const validEndDate = new Date(endDate);
-
-if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
-  return res.status(400).json({ message: 'Start date and end date must be in a valid format' });
-}
-
-if (startDate > endDate) {
-  return res.status(400).json({ message: 'Start date must be before end date' });
-}
-
-if (employees && (!Array.isArray(employees) || employees.some(employee => !mongoose.Types.ObjectId.isValid(employee)))) {
-  return res.status(400).json({ message: 'Employees must be an array of valid ObjectIds' });
-}
+  const errors = validateTraining(req.body);
+  if (errors.length > 0) {
+    return res.status(400).json({ errors });
+  }
 
   const training = new Training({
-    name,
-    instructor,
-    startDate: validStartDate,
-    endDate: validEndDate,
-    location,
-    employees
+    name: req.body.name,
+    instructor: req.body.instructor,
+    startDate: req.body.startDate,
+    endDate: req.body.endDate,
+    location: req.body.location,
+    employees: req.body.employees
   });
+
   try {
     const validationError = training.validateSync();
     if (validationError) {
@@ -91,6 +81,16 @@ if (employees && (!Array.isArray(employees) || employees.some(employee => !mongo
 };
 
 export const updateTraining = async (req, res) => {
+
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ message: 'Invalid Training ID' });
+  }
+
+  const errors = validateTraining(req.body);
+  if (errors.length > 0) {
+    return res.status(400).json({ errors });
+  }
+
   try {
     const updatedTraining = await Training.findByIdAndUpdate(req.params.id, req.body, {
       new: true
@@ -105,6 +105,11 @@ export const updateTraining = async (req, res) => {
 };
 
 export const deleteTraining = async (req, res) => {
+  
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ message: 'Invalid Training ID' });
+  }
+
   try {
     const deletedTraining = await Training.findByIdAndDelete(req.params.id);
     if (deletedTraining == null) {
