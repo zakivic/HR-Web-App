@@ -11,12 +11,12 @@ router.get('/', performanceController.getAllPerformanceReviews);
 router.get('/:id', performanceController.getPerformanceReview);
 
 // Create a new performance review
-router.post('/', performanceController.createPerformanceReview);
+router.post('/create-performance', performanceController.createPerformanceReview);
 
 // Update an existing performance review
-router.patch('/:id', performanceController.updatePerformanceReview);
+router.patch('/update-performance/:id', performanceController.updatePerformanceReview);
 
 // Delete an existing performance review
-router.delete('/:id', performanceController.deletePerformanceReview);
+router.delete('/delete-performance/:id', performanceController.deletePerformanceReview);
 
 export default router;

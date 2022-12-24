@@ -22,15 +22,67 @@ export const getTraining = async (req, res) => {
 };
 
 export const createTraining = async (req, res) => {
+  // Check if all required fields are present
+  const requiredFields = [
+    'name',
+    'instructor',
+    'startDate',
+    'endDate',
+    'location',
+  ];
+  const missingFields = [];
+
+  for (const field of requiredFields) {
+    if (!(field in req.body)) {
+      missingFields.push(field);
+    }
+  }
+
+   // If any fields are missing, send a 400 Bad Request response
+   if (missingFields.length > 0) {
+    res.status(400).json({ message: `Missing ${missingFields.join(', ')} in request body` });
+    return;
+  }
+
+  const {
+    name,
+    instructor,
+    startDate,
+    endDate,
+    location,
+    employees
+  } = req.body;
+
+const validStartDate = new Date(startDate);
+const validEndDate = new Date(endDate);
+
+if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+  return res.status(400).json({ message: 'Start date and end date must be in a valid format' });
+}
+
+if (startDate > endDate) {
+  return res.status(400).json({ message: 'Start date must be before end date' });
+}
+
+if (employees && (!Array.isArray(employees) || employees.some(employee => !mongoose.Types.ObjectId.isValid(employee)))) {
+  return res.status(400).json({ message: 'Employees must be an array of valid ObjectIds' });
+}
+
   const training = new Training({
-    name: req.body.name,
-    instructor: req.body.instructor,
-    startDate: req.body.startDate,
-    endDate: req.body.endDate,
-    location: req.body.location,
-    employees: req.body.employees
+    name,
+    instructor,
+    startDate: validStartDate,
+    endDate: validEndDate,
+    location,
+    employees
   });
   try {
+    const validationError = training.validateSync();
+    if (validationError) {
+      // If there's a validation error, send a 400 Bad Request response
+      res.status(400).json({ message: validationError.message });
+      return;
+    }
     const newTraining = await training.save();
     res.status(201).json(newTraining);
   } catch (err) {
