@@ -57,7 +57,5 @@ export const validateEmployee = employee => {
     errors.push({ field: 'photo', message: 'Photo is required' });
   }
 
-  return {
-    errors
-  };
+  return errors;
 };

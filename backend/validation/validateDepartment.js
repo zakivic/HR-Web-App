@@ -19,7 +19,5 @@ export const validateDepartment = department => {
     }
   }
 
-  return {
-    errors
-  };
+  return errors;
 };

@@ -66,8 +66,8 @@ export const createEmployee = async (req, res) => {
     }
  
   // Validate the fields format and content  
-  const { isValid, errors } = validateEmployee(req.body);
-  if (!isValid) {
+  const errors = validateEmployee(req.body);
+  if (errors.length > 0) {
     return res.status(400).json({ errors });
   }
 
@@ -126,7 +126,7 @@ export const updateEmployee = async (req, res) => {
   }
 
   // Validate the fields format and content
-  const { errors } = validateEmployee(req.body);
+  const errors = validateEmployee(req.body);
   if (errors.length > 0) {
     res.status(400).json({ errors });
     return;

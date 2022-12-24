@@ -33,7 +33,7 @@ export const getDepartment = async (req, res) => {
 export const createDepartment = async (req, res) => {
   
   // Validate the fields format and content
-  const { errors } = validateDepartment(req.body);
+  const errors = validateDepartment(req.body);
   if (errors.length > 0) {
     return res.status(400).json({ errors });
   }
@@ -71,7 +71,7 @@ export const updateDepartment = async (req, res) => {
     return res.status(400).json({ message: 'Invalid Department ID' });
   }
     // Validate the fields format and content
-    const { errors } = validateDepartment(req.body);
+    const errors = validateDepartment(req.body);
     if (errors.length > 0) {
       return res.status(400).json({ errors });
     }

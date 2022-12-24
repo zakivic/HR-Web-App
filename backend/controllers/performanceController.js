@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 
 import Performance from '../models/performanceReviewModel.js';
+import { validatePerformance } from '../validation/validatePerformance.js';
 
 export const getAllPerformanceReviews = async (req, res) => {
   try {
@@ -40,6 +41,7 @@ export const createPerformanceReview = async (req, res) => {
     'overallRating'
   ];
   const missingFields = [];
+
   for (const field of requiredFields) {
     if (!(field in req.body)) {
       missingFields.push(field);
@@ -52,50 +54,19 @@ export const createPerformanceReview = async (req, res) => {
     return;
   }
 
-  const{
-    employee,
-    reviewDate,
-    manager,
-    strengths,
-    areasForImprovement,
-    goals,
-    overallRating
-  } = req.body;
-
-    // Check if employee ID is valid
-    if (!mongoose.Types.ObjectId.isValid(employee)) {
-      return res.status(400).json({ message: 'Invalid Employee ID' });
-    }
-  
-    // Check if review date is valid
-    const validReviewDate = new Date(reviewDate);
-    if (!validReviewDate.getTime()) {
-      return res.status(400).json({ message: 'Invalid Review Date' });
-    }
-  
-    // Check if manager ID is valid
-    if (!mongoose.Types.ObjectId.isValid(manager)) {
-      return res.status(400).json({ message: 'Invalid Manager ID' });
-    }
-  
-    // Check if strengths, areas for improvement, and goals are provided
-    if (!strengths.length || !areasForImprovement.length || !goals.length) {
-      return res.status(400).json({ message: 'Strengths, Areas for Improvement, and Goals are required' });
-    }
-
-    // Check if overallRating is a number and falls within the valid range
-    if (typeof overallRating !== 'number' || overallRating < 1 || overallRating > 5) {
-      return res.status(400).json({ message: 'Invalid Overall Rating' });
-    }
-
+  // Validate the fields format and content
+  const { errors } = validatePerformance(req.body);
+  if (errors.length > 0) {
+    return res.status(400).json({ errors });
+  }
   const performanceReview = new Performance({
-    employee,
-    reviewDate,
-    manager,
-    strengths,
-    areasForImprovement,
-    goals,
-    overallRating
+    employee: req.body.employee,
+    reviewDate: req.body.reviewDate,
+    manager: req.body.manager,
+    strengths: req.body.strengths,
+    areasForImprovement: req.body.areasForImprovement,
+    goals: req.body.goals,
+    overallRating: req.body.overallRating
   });
 
   try {
@@ -118,6 +89,17 @@ export const createPerformanceReview = async (req, res) => {
 
 
 export const updatePerformanceReview = async (req, res) => {
+
+  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+    return res.status(400).json({ message: 'Invalid Performance ID' });
+  }
+
+  // Validate the fields format and content
+  const { errors } = validatePerformance(req.body);
+  if (errors.length > 0) {
+    return res.status(400).json({ errors });
+  }
+
   try {
     const updatedPerformanceReview = await Performance.findByIdAndUpdate(req.params.id, req.body, {
       new: true
