@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
+// import ValidationError
 import jwt from 'jsonwebtoken';
 
 import User from '../models/userModel.js';
@@ -49,18 +50,24 @@ export const createUser = async (req, res) => {
     // Send a success response
     return res.status(201).json({ message: 'User created successfully' });
   } catch (error) {
-    // Send an error response if something goes wrong
-    return res.status(500).json({ error: error.message });
+    if (error instanceof ValidationError) {
+      return res.status(400).json({ error: error.message });
+    } else if (error instanceof MongoError && error.code === 11000) {
+      return res.status(409).json({ error: 'Email already exists' });
+    } else {
+      return res.status(500).json({ error: 'An unexpected error occurred' });
+    }
   }
 };
 
+
 export const resetPassword = async (req, res) => {
   try {
-     // Validate the reset code and new password
-     const errors = validateUser(req.body);
-     if (errors.length > 0) {
-       return res.status(400).json({ error: errors });
-     }
+    // Validate the reset code and new password
+    const errors = validateUser(req.body);
+    if (errors.length > 0) {
+      return res.status(400).json({ error: errors });
+    }
 
     // Find the user with the specified reset code
     const user = await User.findOne({ resetCode: req.body.resetCode });
@@ -79,8 +86,11 @@ export const resetPassword = async (req, res) => {
     // Send a success response
     return res.status(200).json({ message: 'Password reset successfully' });
   } catch (error) {
-    // Send an error response if something goes wrong
-    return res.status(500).json({ error: error.message });
+    if (error instanceof ValidationError) {
+      return res.status(400).json({ error: error.message });
+    } else {
+      return res.status(500).json({ error: 'An unexpected error occurred' });
+    }
   }
 };
 
@@ -104,18 +114,23 @@ export const updateUser = async (req, res) => {
       password: hashedPassword,
       role: req.body.role
     }, { new: true });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
 
     // Send a success response
     res.json({ message: 'User updated successfully', user });
   } catch (error) {
-    // Send an error response if something goes wrong
-    res.status(500).json({ error: error.message });
+    if (error instanceof ValidationError) {
+      return res.status(400).json({ error: error.message });
+    } else {
+      return res.status(500).json({ error: 'An unexpected error occurred' });
+    }
   }
 };
 
 export const login = async (req, res) => {
   try {
-
     // Validate the request body
     const errors = validateUser(req.body);
     if (errors.length > 0) {
@@ -141,16 +156,19 @@ export const login = async (req, res) => {
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
     return res.status(200).json({ message: 'Logged in successfully', token });
   } catch (error) {
-    // Send an error response if something goes wrong
-    return res.status(500).json({ error: error.message });
+    if (error instanceof ValidationError) {
+      return res.status(400).json({ error: error.message });
+    } else {
+      return res.status(500).json({ error: 'An unexpected error occurred' });
+    }
   }
 };
 
+
 export const deleteUser = async (req, res) => {
   try {
-
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ message: 'Invalid User ID' });
+      return res.status(400).json({ error: 'Invalid User ID' });
     }
 
     // Find the user with the specified ID
@@ -165,10 +183,15 @@ export const deleteUser = async (req, res) => {
     // Send a success response
     return res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
-    // Send an error response if something goes wrong
-    return res.status(500).json({ error: error.message });
+    if (error instanceof CastError) {
+      return res.status(400).json({ error: 'Invalid User ID' });
+    } else {
+      return res.status(500).json({ error: 'An unexpected error occurred' });
+    }
   }
 };
+
+
 
 
 
