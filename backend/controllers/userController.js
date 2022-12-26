@@ -1,20 +1,14 @@
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
-// import ValidationError
+import { ValidationError } from 'mongoose';
 import jwt from 'jsonwebtoken';
 
 import User from '../models/userModel.js';
 import Employee from '../models/employeeModel.js';
-import { validateUser } from '../utils/validation/validateUser.js';
 import { sendResetEmail } from '../utils/sendResetEmail.js';
 
 export const createUser = async (req, res) => {
   try {
-    // Validate the request body
-    const errors = validateUser(req.body);
-    if (errors.length > 0) {
-      return res.status(400).json({ error: errors });
-    }
 
     // Get the email, password, and role from the request body
     const { email, password, role } = req.body;
@@ -63,11 +57,6 @@ export const createUser = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
   try {
-    // Validate the reset code and new password
-    const errors = validateUser(req.body);
-    if (errors.length > 0) {
-      return res.status(400).json({ error: errors });
-    }
 
     // Find the user with the specified reset code
     const user = await User.findOne({ resetCode: req.body.resetCode });
@@ -96,11 +85,6 @@ export const resetPassword = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    // Validate the updated email, password, and role
-    const errors = validateUser(req.body);
-    if (errors.length > 0) {
-      return res.status(400).json({ error: errors });
-    }
 
     // Hash the password if it was updated
     let hashedPassword;
@@ -131,11 +115,6 @@ export const updateUser = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    // Validate the request body
-    const errors = validateUser(req.body);
-    if (errors.length > 0) {
-      return res.status(400).json({ error: errors });
-    }
 
     // Get the email and password from the request body
     const { email, password } = req.body;
