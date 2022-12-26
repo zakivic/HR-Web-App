@@ -1,16 +1,14 @@
 import bcrypt from 'bcrypt';
-import nodemailer from 'nodemailer';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 
 import User from '../models/userModel.js';
 import Employee from '../models/employeeModel.js';
-import { validateUser } from '../validation/validateUser.js';
+import { validateUser } from '../utils/validation/validateUser.js';
+import { sendResetEmail } from '../utils/sendResetEmail.js';
 
 export const createUser = async (req, res) => {
-
   try {
-
     // Validate the request body
     const errors = validateUser(req.body);
     if (errors.length > 0) {
@@ -45,29 +43,8 @@ export const createUser = async (req, res) => {
     await user.save();
 
     // Send an email to the employee with a link to reset the password
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USERNAME,
-        pass: process.env.EMAIL_PASSWORD
-      }
-    });
-
     const resetLink = `http://your-app.com/reset-password/${user.resetCode}`;
-    const mailOptions = {
-      from: process.env.EMAIL_USERNAME,
-      to: employee.email,
-      subject: 'Your Password Reset Link',
-      html: `<p>If you need to reset your password, click <a href="${resetLink}">here</a>.</p>`
-    };
-
-    transporter.sendMail(mailOptions, function(error, info) {
-      if (error) {
-        console.error(error);
-      } else {
-        console.log('Email sent: ' + info.response);
-      }
-    });
+    await sendResetEmail(employee.email, resetLink);
 
     // Send a success response
     return res.status(201).json({ message: 'User created successfully' });
