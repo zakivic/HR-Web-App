@@ -12,6 +12,14 @@ export const createUser = async (req, res) => {
     // Get the email, password, and role from the request body
     const { email, password, role } = req.body;
 
+    // Check if a user already exists with the given email
+    const oldUser = await User.findOne({ email });
+    if (oldUser) {
+      return res
+        .status(409)
+        .json({ error: "A user with this email already exists" });
+    }
+
     // Find the employee with the specified email
     const employee = await Employee.findOne({ email });
     if (!employee) {
