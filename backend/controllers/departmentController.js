@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 import Department from '../models/departmentModel.js';
-import { validateDepartment } from '../validation/validateDepartment.js';
+
 
 
 export const getAllDepartments = async (req, res) => {
@@ -31,12 +31,6 @@ export const getDepartment = async (req, res) => {
 };
 
 export const createDepartment = async (req, res) => {
-  
-  // Validate the fields format and content
-  const errors = validateDepartment(req.body);
-  if (errors.length > 0) {
-    return res.status(400).json({ errors });
-  }
 
   // Check if a department with the same name already exists
   const existingDepartment = await Department.findOne({ name: req.body.name });
@@ -70,11 +64,6 @@ export const updateDepartment = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ message: 'Invalid Department ID' });
   }
-    // Validate the fields format and content
-    const errors = validateDepartment(req.body);
-    if (errors.length > 0) {
-      return res.status(400).json({ errors });
-    }
 
   try {
     const updatedDepartment = await Department.findByIdAndUpdate(req.params.id, req.body, {
@@ -105,3 +94,5 @@ export const deleteDepartment = async (req, res) => {
       res.status(500).json({ message: err.message });
     }
   };
+
+ 
