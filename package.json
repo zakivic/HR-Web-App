@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "jsonwebtoken": "^9.0.0"
+  },
+  "devDependencies": {
+    "prettier": "^2.8.1"
   }
 }

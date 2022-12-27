@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-import Training from '../models/trainingModel.js';
-import { validateTraining } from '../validation/validateTraining.js';
+import Training from "../models/trainingModel.js";
+import { validateTraining } from "../validation/validateTraining.js";
 
 export const getAllTrainings = async (req, res) => {
   try {
@@ -13,15 +13,14 @@ export const getAllTrainings = async (req, res) => {
 };
 
 export const getTraining = async (req, res) => {
-
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ message: 'Invalid Training ID' });
+    return res.status(400).json({ message: "Invalid Training ID" });
   }
 
   try {
     const training = await Training.findById(req.params.id);
     if (training == null) {
-      return res.status(404).json({ message: 'Cannot find training' });
+      return res.status(404).json({ message: "Cannot find training" });
     }
     res.json(training);
   } catch (err) {
@@ -32,11 +31,11 @@ export const getTraining = async (req, res) => {
 export const createTraining = async (req, res) => {
   // Check if all required fields are present
   const requiredFields = [
-    'name',
-    'instructor',
-    'startDate',
-    'endDate',
-    'location',
+    "name",
+    "instructor",
+    "startDate",
+    "endDate",
+    "location",
   ];
   const missingFields = [];
 
@@ -46,9 +45,11 @@ export const createTraining = async (req, res) => {
     }
   }
 
-   // If any fields are missing, send a 400 Bad Request response
-   if (missingFields.length > 0) {
-    res.status(400).json({ message: `Missing ${missingFields.join(', ')} in request body` });
+  // If any fields are missing, send a 400 Bad Request response
+  if (missingFields.length > 0) {
+    res
+      .status(400)
+      .json({ message: `Missing ${missingFields.join(", ")} in request body` });
     return;
   }
 
@@ -63,7 +64,7 @@ export const createTraining = async (req, res) => {
     startDate: req.body.startDate,
     endDate: req.body.endDate,
     location: req.body.location,
-    employees: req.body.employees
+    employees: req.body.employees,
   });
 
   try {
@@ -81,9 +82,8 @@ export const createTraining = async (req, res) => {
 };
 
 export const updateTraining = async (req, res) => {
-
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ message: 'Invalid Training ID' });
+    return res.status(400).json({ message: "Invalid Training ID" });
   }
 
   const errors = validateTraining(req.body);
@@ -92,11 +92,15 @@ export const updateTraining = async (req, res) => {
   }
 
   try {
-    const updatedTraining = await Training.findByIdAndUpdate(req.params.id, req.body, {
-      new: true
-    });
+    const updatedTraining = await Training.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+      }
+    );
     if (updatedTraining == null) {
-      return res.status(404).json({ message: 'Cannot find training' });
+      return res.status(404).json({ message: "Cannot find training" });
     }
     res.json(updatedTraining);
   } catch (err) {
@@ -105,17 +109,16 @@ export const updateTraining = async (req, res) => {
 };
 
 export const deleteTraining = async (req, res) => {
-  
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ message: 'Invalid Training ID' });
+    return res.status(400).json({ message: "Invalid Training ID" });
   }
 
   try {
     const deletedTraining = await Training.findByIdAndDelete(req.params.id);
     if (deletedTraining == null) {
-      return res.status(404).json({ message: 'Cannot find training' });
+      return res.status(404).json({ message: "Cannot find training" });
     }
-    res.json({ message: 'Deleted training' });
+    res.json({ message: "Deleted training" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

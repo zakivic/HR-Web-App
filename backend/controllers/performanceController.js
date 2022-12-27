@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-import Performance from '../models/performanceReviewModel.js';
-import { validatePerformance } from '../validation/validatePerformance.js';
+import Performance from "../models/performanceReviewModel.js";
+import { validatePerformance } from "../validation/validatePerformance.js";
 
 export const getAllPerformanceReviews = async (req, res) => {
   try {
@@ -13,15 +13,16 @@ export const getAllPerformanceReviews = async (req, res) => {
 };
 
 export const getPerformanceReview = async (req, res) => {
-
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ message: 'Invalid Performance ID' });
+    return res.status(400).json({ message: "Invalid Performance ID" });
   }
 
   try {
     const performanceReview = await Performance.findById(req.params.id);
     if (performanceReview == null) {
-      return res.status(404).json({ message: 'Cannot find performance review' });
+      return res
+        .status(404)
+        .json({ message: "Cannot find performance review" });
     }
     res.json(performanceReview);
   } catch (err) {
@@ -32,13 +33,13 @@ export const getPerformanceReview = async (req, res) => {
 export const createPerformanceReview = async (req, res) => {
   // Check if all required fields are present
   const requiredFields = [
-    'employee', 
-    'reviewDate', 
-    'manager', 
-    'strengths', 
-    'areasForImprovement', 
-    'goals', 
-    'overallRating'
+    "employee",
+    "reviewDate",
+    "manager",
+    "strengths",
+    "areasForImprovement",
+    "goals",
+    "overallRating",
   ];
   const missingFields = [];
 
@@ -50,7 +51,9 @@ export const createPerformanceReview = async (req, res) => {
 
   // If any fields are missing, send a 400 Bad Request response
   if (missingFields.length > 0) {
-    res.status(400).json({ message: `Missing ${missingFields.join(', ')} in request body` });
+    res
+      .status(400)
+      .json({ message: `Missing ${missingFields.join(", ")} in request body` });
     return;
   }
 
@@ -66,7 +69,7 @@ export const createPerformanceReview = async (req, res) => {
     strengths: req.body.strengths,
     areasForImprovement: req.body.areasForImprovement,
     goals: req.body.goals,
-    overallRating: req.body.overallRating
+    overallRating: req.body.overallRating,
   });
 
   try {
@@ -86,12 +89,9 @@ export const createPerformanceReview = async (req, res) => {
   }
 };
 
-
-
 export const updatePerformanceReview = async (req, res) => {
-
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ message: 'Invalid Performance ID' });
+    return res.status(400).json({ message: "Invalid Performance ID" });
   }
 
   // Validate the fields format and content
@@ -101,11 +101,17 @@ export const updatePerformanceReview = async (req, res) => {
   }
 
   try {
-    const updatedPerformanceReview = await Performance.findByIdAndUpdate(req.params.id, req.body, {
-      new: true
-    });
+    const updatedPerformanceReview = await Performance.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+      }
+    );
     if (updatedPerformanceReview == null) {
-      return res.status(404).json({ message: 'Cannot find performance review' });
+      return res
+        .status(404)
+        .json({ message: "Cannot find performance review" });
     }
     res.json(updatedPerformanceReview);
   } catch (err) {
@@ -114,22 +120,21 @@ export const updatePerformanceReview = async (req, res) => {
 };
 
 export const deletePerformanceReview = async (req, res) => {
-
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ message: 'Invalid Performance ID' });
+    return res.status(400).json({ message: "Invalid Performance ID" });
   }
 
   try {
-    const deletedPerformanceReview = await Performance.findByIdAndDelete(req.params.id);
+    const deletedPerformanceReview = await Performance.findByIdAndDelete(
+      req.params.id
+    );
     if (deletedPerformanceReview == null) {
-      return res.status(404).json({ message: 'Cannot find performance review' });
+      return res
+        .status(404)
+        .json({ message: "Cannot find performance review" });
     }
-      res.json({ message: 'Deleted performance review' });
+    res.json({ message: "Deleted performance review" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
-
-  
-  
-  

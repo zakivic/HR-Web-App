@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-import Employee from '../models/employeeModel.js';
-import { validateEmployee } from '../validation/validateEmployee.js'
+import Employee from "../models/employeeModel.js";
+import { validateEmployee } from "../validation/validateEmployee.js";
 
 export const getAllEmployees = async (req, res) => {
   try {
@@ -13,15 +13,14 @@ export const getAllEmployees = async (req, res) => {
 };
 
 export const getEmployee = async (req, res) => {
-  
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ message: 'Invalid Employee ID' });
+    return res.status(400).json({ message: "Invalid Employee ID" });
   }
 
   try {
     const employee = await Employee.findById(req.params.id);
     if (employee == null) {
-      return res.status(404).json({ message: 'Cannot find employee' });
+      return res.status(404).json({ message: "Cannot find employee" });
     }
     res.json(employee);
   } catch (err) {
@@ -30,55 +29,59 @@ export const getEmployee = async (req, res) => {
 };
 
 export const createEmployee = async (req, res) => {
+  // Check if all required fields are present
+  const requiredFields = [
+    "firstName",
+    "lastName",
+    "email",
+    "mobilePhone",
+    "hireDate",
+    "department",
+    "jobTitle",
+    "nationalIDNumber",
+    "socialSecurityNumber",
+    "nationality",
+    "gender",
+    "address",
+    "photo",
+    "bloodType",
+    "martialStatus",
+    "militaryStatus",
+    "educationStatus",
+  ];
+  const missingFields = [];
 
-    // Check if all required fields are present
-    const requiredFields = [
-      'firstName',
-      'lastName',
-      'email',
-      'mobilePhone',
-      'hireDate',
-      'department',
-      'jobTitle',
-      'nationalIDNumber',
-      'socialSecurityNumber',
-      'nationality',
-      'gender',
-      'address',
-      'photo',
-      'bloodType',
-      'martialStatus',
-      'militaryStatus',
-      'educationStatus'
-    ];
-    const missingFields = [];
-    
-    for (const field of requiredFields) {
-      if (!(field in req.body)) {
-        missingFields.push(field);
-      }
+  for (const field of requiredFields) {
+    if (!(field in req.body)) {
+      missingFields.push(field);
     }
-  
-    // If any fields are missing, send a 400 Bad Request response
-    if (missingFields.length > 0) {
-      res.status(400).json({ message: `Missing ${missingFields.join(', ')} in request body` });
-      return;
-    }
- 
-  // Validate the fields format and content  
+  }
+
+  // If any fields are missing, send a 400 Bad Request response
+  if (missingFields.length > 0) {
+    res
+      .status(400)
+      .json({ message: `Missing ${missingFields.join(", ")} in request body` });
+    return;
+  }
+
+  // Validate the fields format and content
   const errors = validateEmployee(req.body);
   if (errors.length > 0) {
     return res.status(400).json({ errors });
   }
 
-   // Check if an employee with the same email address already exists
-   const existingEmployee = await Employee.findOne({ email: req.body.email });
-   if (existingEmployee) {
-     return res.status(400).json({ message: 'An employee with the same email address already exists' });
-   } 
+  // Check if an employee with the same email address already exists
+  const existingEmployee = await Employee.findOne({ email: req.body.email });
+  if (existingEmployee) {
+    return res
+      .status(400)
+      .json({
+        message: "An employee with the same email address already exists",
+      });
+  }
 
-
-   const employee = new Employee({
+  const employee = new Employee({
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
@@ -99,7 +102,7 @@ export const createEmployee = async (req, res) => {
     educationStatus: req.body.educationStatus,
     emergencyContactName: req.body.emergencyContactName,
     emergencyContactRelationship: req.body.emergencyContactRelationship,
-    emergencyContactPhone: req.body.emergencyContactPhone
+    emergencyContactPhone: req.body.emergencyContactPhone,
   });
 
   try {
@@ -120,9 +123,8 @@ export const createEmployee = async (req, res) => {
 };
 
 export const updateEmployee = async (req, res) => {
-
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ message: 'Invalid Employee ID' });
+    return res.status(400).json({ message: "Invalid Employee ID" });
   }
 
   // Validate the fields format and content
@@ -133,11 +135,15 @@ export const updateEmployee = async (req, res) => {
   }
 
   try {
-    const updatedEmployee = await Employee.findByIdAndUpdate(req.params.id, req.body, {
-      new: true
-    });
+    const updatedEmployee = await Employee.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      {
+        new: true,
+      }
+    );
     if (updatedEmployee == null) {
-      return res.status(404).json({ message: 'Cannot find employee' });
+      return res.status(404).json({ message: "Cannot find employee" });
     }
     res.json(updatedEmployee);
   } catch (err) {
@@ -145,20 +151,18 @@ export const updateEmployee = async (req, res) => {
   }
 };
 
-
 export const deleteEmployee = async (req, res) => {
-
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ message: 'Invalid Employee ID' });
+    return res.status(400).json({ message: "Invalid Employee ID" });
   }
 
-    try {
-      const deletedEmployee = await Employee.findByIdAndDelete(req.params.id);
-      if (deletedEmployee == null) {
-        return res.status(404).json({ message: 'Cannot find employee' });
-      }
-      res.json({ message: 'Deleted Employee' });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
+  try {
+    const deletedEmployee = await Employee.findByIdAndDelete(req.params.id);
+    if (deletedEmployee == null) {
+      return res.status(404).json({ message: "Cannot find employee" });
     }
-  };
+    res.json({ message: "Deleted Employee" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
