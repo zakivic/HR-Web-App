@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
-import { ValidationError } from "mongoose";
 import jwt from "jsonwebtoken";
+const ValidationError = mongoose.ValidationError;
 
 import User from "../models/userModel.js";
 import Employee from "../models/employeeModel.js";

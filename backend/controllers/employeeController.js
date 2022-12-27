@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 import Employee from "../models/employeeModel.js";
-import { validateEmployee } from "../validation/validateEmployee.js";
 
 export const getAllEmployees = async (req, res) => {
   try {
@@ -29,56 +28,12 @@ export const getEmployee = async (req, res) => {
 };
 
 export const createEmployee = async (req, res) => {
-  // Check if all required fields are present
-  const requiredFields = [
-    "firstName",
-    "lastName",
-    "email",
-    "mobilePhone",
-    "hireDate",
-    "department",
-    "jobTitle",
-    "nationalIDNumber",
-    "socialSecurityNumber",
-    "nationality",
-    "gender",
-    "address",
-    "photo",
-    "bloodType",
-    "martialStatus",
-    "militaryStatus",
-    "educationStatus",
-  ];
-  const missingFields = [];
-
-  for (const field of requiredFields) {
-    if (!(field in req.body)) {
-      missingFields.push(field);
-    }
-  }
-
-  // If any fields are missing, send a 400 Bad Request response
-  if (missingFields.length > 0) {
-    res
-      .status(400)
-      .json({ message: `Missing ${missingFields.join(", ")} in request body` });
-    return;
-  }
-
-  // Validate the fields format and content
-  const errors = validateEmployee(req.body);
-  if (errors.length > 0) {
-    return res.status(400).json({ errors });
-  }
-
   // Check if an employee with the same email address already exists
   const existingEmployee = await Employee.findOne({ email: req.body.email });
   if (existingEmployee) {
-    return res
-      .status(400)
-      .json({
-        message: "An employee with the same email address already exists",
-      });
+    return res.status(400).json({
+      message: "An employee with the same email address already exists",
+    });
   }
 
   const employee = new Employee({
@@ -125,13 +80,6 @@ export const createEmployee = async (req, res) => {
 export const updateEmployee = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ message: "Invalid Employee ID" });
-  }
-
-  // Validate the fields format and content
-  const errors = validateEmployee(req.body);
-  if (errors.length > 0) {
-    res.status(400).json({ errors });
-    return;
   }
 
   try {

@@ -1,4 +1,5 @@
 import validator from "validator";
+import mongoose from "mongoose";
 export const validateTraining = (training) => {
   const errors = [];
 

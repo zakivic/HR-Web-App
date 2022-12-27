@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 
 import Performance from "../models/performanceReviewModel.js";
-import { validatePerformance } from "../validation/validatePerformance.js";
 
 export const getAllPerformanceReviews = async (req, res) => {
   try {
@@ -31,37 +30,6 @@ export const getPerformanceReview = async (req, res) => {
 };
 
 export const createPerformanceReview = async (req, res) => {
-  // Check if all required fields are present
-  const requiredFields = [
-    "employee",
-    "reviewDate",
-    "manager",
-    "strengths",
-    "areasForImprovement",
-    "goals",
-    "overallRating",
-  ];
-  const missingFields = [];
-
-  for (const field of requiredFields) {
-    if (!(field in req.body)) {
-      missingFields.push(field);
-    }
-  }
-
-  // If any fields are missing, send a 400 Bad Request response
-  if (missingFields.length > 0) {
-    res
-      .status(400)
-      .json({ message: `Missing ${missingFields.join(", ")} in request body` });
-    return;
-  }
-
-  // Validate the fields format and content
-  const errors = validatePerformance(req.body);
-  if (errors.length > 0) {
-    return res.status(400).json({ errors });
-  }
   const performanceReview = new Performance({
     employee: req.body.employee,
     reviewDate: req.body.reviewDate,
@@ -92,12 +60,6 @@ export const createPerformanceReview = async (req, res) => {
 export const updatePerformanceReview = async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ message: "Invalid Performance ID" });
-  }
-
-  // Validate the fields format and content
-  const errors = validatePerformance(req.body);
-  if (errors.length > 0) {
-    return res.status(400).json({ errors });
   }
 
   try {

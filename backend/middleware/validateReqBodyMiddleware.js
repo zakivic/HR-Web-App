@@ -19,7 +19,7 @@ export const validateTrainingRequestBody = (req, res, next) => {
 
   // Handle different request paths
   switch (path) {
-    case "/:id":
+    case "/update-training/:id":
       // If the request is being made to the update endpoint, skip the check for missing required fields
       // Call the validateTraining function to validate all fields that are present in the request body
       errors = validateTraining(req.body);
@@ -64,14 +64,14 @@ export const validateTrainingRequestBody = (req, res, next) => {
   next();
 };
 
-export const validatePerformanceReview = (req, res, next) => {
+export const validatePerformanceRequestBody = (req, res, next) => {
   // Determine the request path
   const path = req.route.path;
   let errors;
 
   // Handle different request paths
   switch (path) {
-    case "/:id":
+    case "/update-performance/:id":
       // If the request is being made to the update endpoint, skip the check for missing required fields
       // Call the validatePerformance function to validate all fields that are present in the request body
       errors = validatePerformance(req.body);
@@ -125,7 +125,7 @@ export const validateEmployeeRequestBody = (req, res, next) => {
 
   // Handle different request paths
   switch (path) {
-    case "/:id":
+    case "/update-employee/:id":
       // If the request is being made to the update endpoint, skip the check for missing required fields
       // Call the validateEmployee function to validate all fields that are present in the request body
       errors = validateEmployee(req.body);
@@ -185,11 +185,12 @@ export const validateEmployeeRequestBody = (req, res, next) => {
 export const validateDepartmentRequestBody = (req, res, next) => {
   // Determine the request path
   const path = req.route.path;
+  console.log(path);
   let errors;
 
   // Handle different request paths
   switch (path) {
-    case "/:id":
+    case "/update-department/:id":
       // If the request is being made to the update endpoint, skip the check for missing required fields
       // Call the validateDepartment function to validate all fields that are present in the request body
       errors = validateDepartment(req.body);
