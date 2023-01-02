@@ -1,10 +1,10 @@
 import { TextField } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { useState } from "react";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
-const TrainingForm = () => {
-  const [formData, setFormData] = useState({});
+const TrainingForm = (props) => {
+  const { formData, setFormData } = props;
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
@@ -24,7 +24,7 @@ const TrainingForm = () => {
           name="startDate"
           label="Start Date"
           value={formData.startDate}
-          onChange={handleListItemClick}
+          onChange={handleChange}
           renderInput={(params) => <TextField {...params} />}
         />
       </LocalizationProvider>

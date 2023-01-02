@@ -1,11 +1,11 @@
 import { TextField } from "@mui/material";
-import { useState } from "react";
 
-const DepartmentForm = () => {
-  const [formData, setFormData] = useState({});
+const DepartmentForm = (props) => {
+  const { formData, setFormData } = props;
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
+
   return (
     <>
       <TextField
