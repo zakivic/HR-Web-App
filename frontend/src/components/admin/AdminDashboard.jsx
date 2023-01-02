@@ -29,6 +29,7 @@ import { useState } from "react";
 
 import Copyright from "../Copyright";
 import AdminCrudMenu from "./AdminCrudMenu";
+import AdminDialog from "./AdminDialog";
 
 const drawerWidth = 240;
 
@@ -80,6 +81,7 @@ const mdTheme = createTheme();
 
 const DashboardContent = () => {
   const [open, setOpen] = useState(true);
+  const [openDialog, setOpenDialog] = useState(false);
   const [title, setTitle] = useState("Employees");
   const toggleDrawer = () => {
     setOpen(!open);
@@ -191,6 +193,7 @@ const DashboardContent = () => {
           <Fab
             color="primary"
             aria-label="add"
+            onClick={() => setOpenDialog(true)}
             sx={{
               position: "absolute",
               top: 80,
@@ -199,6 +202,11 @@ const DashboardContent = () => {
           >
             <AddIcon />
           </Fab>
+          <AdminDialog
+            title={title}
+            openDialog={openDialog}
+            onClose={() => setOpenDialog(false)}
+          />
           <Copyright sx={{ pt: 4 }} />
         </Box>
       </Box>
