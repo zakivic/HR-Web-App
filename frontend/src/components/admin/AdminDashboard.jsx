@@ -28,7 +28,6 @@ import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import { useState } from "react";
 
 import Copyright from "../Copyright";
-import AdminCrudMenu from "./AdminCrudMenu";
 import AdminDialog from "./AdminDialog";
 
 const drawerWidth = 240;
@@ -77,8 +76,6 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-const mdTheme = createTheme();
-
 const DashboardContent = () => {
   const [open, setOpen] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
@@ -88,129 +85,130 @@ const DashboardContent = () => {
   };
 
   return (
-    <ThemeProvider theme={mdTheme}>
-      <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        <AppBar position="absolute" open={open}>
-          <Toolbar
-            sx={{
-              pr: "24px", // keep right padding when drawer closed
-            }}
-          >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: "36px",
-                ...(open && { display: "none" }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              component="h1"
-              variant="h6"
-              color="inherit"
-              noWrap
-              sx={{ flexGrow: 1 }}
-            >
-              Emre Insan Dashboard
-            </Typography>
-            <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
-          </Toolbar>
-        </AppBar>
-        <Drawer variant="permanent" open={open}>
-          <Toolbar
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "flex-end",
-              px: [1],
-            }}
-          >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          <Divider />
-          <List component="nav">
-            <ListItemButton onClick={() => setTitle("Employees")}>
-              <ListItemIcon>
-                <BadgeIcon />
-              </ListItemIcon>
-              <ListItemText primary="Employees" />
-            </ListItemButton>
-            <ListItemButton onClick={() => setTitle("Users")}>
-              <ListItemIcon>
-                <ManageAccountsIcon />
-              </ListItemIcon>
-              <ListItemText primary="Users" />
-            </ListItemButton>
-            <ListItemButton onClick={() => setTitle("Department")}>
-              <ListItemIcon>
-                <DomainIcon />
-              </ListItemIcon>
-              <ListItemText primary="Department" />
-            </ListItemButton>
-            <ListItemButton onClick={() => setTitle("Training")}>
-              <ListItemIcon>
-                <SchoolIcon />
-              </ListItemIcon>
-              <ListItemText primary="Training" />
-            </ListItemButton>
-            <ListItemButton onClick={() => setTitle("Performance")}>
-              <ListItemIcon>
-                <EqualizerIcon />
-              </ListItemIcon>
-              <ListItemText primary="Performance" />
-            </ListItemButton>
-            <Divider sx={{ my: 1 }} />
-            {/* {secondaryListItems} */}
-          </List>
-        </Drawer>
-        <Box
-          component="main"
+    <Box sx={{ display: "flex" }}>
+      <CssBaseline />
+      <AppBar position="absolute" open={open}>
+        <Toolbar
           sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === "light"
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: "100vh",
-            overflow: "auto",
+            pr: "24px", // keep right padding when drawer closed
           }}
         >
-          <Toolbar />
-          <Typography m={2} variant="h4">
-            {title}
-          </Typography>
-          <Fab
-            color="primary"
-            aria-label="add"
-            onClick={() => setOpenDialog(true)}
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="open drawer"
+            onClick={toggleDrawer}
             sx={{
-              position: "absolute",
-              top: 80,
-              right: 15,
+              marginRight: "36px",
+              ...(open && { display: "none" }),
             }}
           >
-            <AddIcon />
-          </Fab>
-          <AdminDialog
-            title={title}
-            openDialog={openDialog}
-            onClose={() => setOpenDialog(false)}
-          />
-          <Copyright sx={{ pt: 4 }} />
-        </Box>
+            <MenuIcon />
+          </IconButton>
+          <Typography
+            component="h1"
+            variant="h6"
+            color="inherit"
+            noWrap
+            sx={{ flexGrow: 1 }}
+          >
+            Emre Insan Dashboard
+          </Typography>
+          <IconButton color="inherit">
+            <Badge badgeContent={4} color="secondary">
+              <NotificationsIcon />
+            </Badge>
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+      <Drawer variant="permanent" open={open}>
+        <Toolbar
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "flex-end",
+            px: [1],
+          }}
+        >
+          <IconButton onClick={toggleDrawer}>
+            <ChevronLeftIcon />
+          </IconButton>
+        </Toolbar>
+        <Divider />
+        <List component="nav">
+          <ListItemButton onClick={() => setTitle("Employees")}>
+            <ListItemIcon>
+              <BadgeIcon />
+            </ListItemIcon>
+            <ListItemText primary="Employees" />
+          </ListItemButton>
+          <ListItemButton onClick={() => setTitle("Users")}>
+            <ListItemIcon>
+              <ManageAccountsIcon />
+            </ListItemIcon>
+            <ListItemText primary="Users" />
+          </ListItemButton>
+          <ListItemButton onClick={() => setTitle("Department")}>
+            <ListItemIcon>
+              <DomainIcon />
+            </ListItemIcon>
+            <ListItemText primary="Department" />
+          </ListItemButton>
+          <ListItemButton onClick={() => setTitle("Training")}>
+            <ListItemIcon>
+              <SchoolIcon />
+            </ListItemIcon>
+            <ListItemText primary="Training" />
+          </ListItemButton>
+          <ListItemButton onClick={() => setTitle("Performance")}>
+            <ListItemIcon>
+              <EqualizerIcon />
+            </ListItemIcon>
+            <ListItemText primary="Performance" />
+          </ListItemButton>
+          <Divider sx={{ my: 1 }} />
+          {/* open dialog for adding */}
+          <ListItemButton onClick={() => setOpenDialog(true)}>
+            <ListItemIcon>
+              <AddIcon />
+            </ListItemIcon>
+            <ListItemText primary={"Add " + title} />
+          </ListItemButton>
+        </List>
+      </Drawer>
+      <Box
+        component="main"
+        sx={{
+          backgroundColor: (theme) =>
+            theme.palette.mode === "light"
+              ? theme.palette.grey[100]
+              : theme.palette.grey[900],
+          flexGrow: 1,
+          height: "100vh",
+          overflow: "auto",
+          position: "relative",
+        }}
+      >
+        <Toolbar />
+        <Typography m={2} variant="h4">
+          {title}
+        </Typography>
+        <AdminDialog
+          title={title}
+          openDialog={openDialog}
+          onClose={() => setOpenDialog(false)}
+        />
+        <Copyright
+          sx={{
+            pt: 4,
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+          }}
+        />
       </Box>
-    </ThemeProvider>
+    </Box>
   );
 };
 
