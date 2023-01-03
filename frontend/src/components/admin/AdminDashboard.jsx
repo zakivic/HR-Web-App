@@ -211,7 +211,7 @@ const DashboardContent = () => {
           }}
         />
       </Box>
-    </ThemeProvider>
+    </Box>
   );
 };
 
