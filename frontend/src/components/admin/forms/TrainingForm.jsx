@@ -4,10 +4,12 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 const TrainingForm = (props) => {
-  const { formData, setFormData } = props;
+  const { values = {}, errors, touched, setFieldValue } = props;
+
   const handleChange = (event) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
+    setFieldValue(event.target.name, event.target.value);
   };
+
   return (
     <>
       <TextField
@@ -16,62 +18,45 @@ const TrainingForm = (props) => {
         label="Employee"
         type="text"
         fullWidth
-        value={formData.employee}
-        onChange={handleChange}
+        value={values.employee || ""}
+        onChange={(event) =>
+          setFieldValue(event.target.name, event.target.value)
+        }
+        error={touched.employee && !!errors.employee}
+        helperText={touched.employee && errors.employee}
       />
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
           name="startDate"
           label="Start Date"
-          value={formData.startDate}
-          onChange={handleChange}
-          renderInput={(params) => <TextField {...params} />}
+          value={values.startDate || null}
+          onChange={(date) => setFieldValue("startDate", date)}
+          error={touched.startDate && !!errors.startDate}
+          helperText={touched.startDate && errors.startDate}
         />
       </LocalizationProvider>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
         <DatePicker
           name="endDate"
           label="End Date"
-          value={formData.endDate}
-          renderInput={(params) => <TextField {...params} />}
-          onChange={handleChange}
+          value={values.endDate || null}
+          onChange={(date) => setFieldValue("endDate", date)}
+          error={touched.endDate && !!errors.endDate}
+          helperText={touched.endDate && errors.endDate}
         />
       </LocalizationProvider>
       <TextField
         required
-        name="course"
-        label="Course"
+        name="description"
+        label="Description"
         type="text"
         fullWidth
-        value={formData.course}
-        onChange={handleChange}
-      />
-      <TextField
-        required
-        name="trainer"
-        label="Trainer"
-        type="text"
-        fullWidth
-        value={formData.trainer}
-        onChange={handleChange}
-      />
-      <TextField
-        required
-        name="location"
-        label="Location"
-        type="text"
-        fullWidth
-        value={formData.location}
-        onChange={handleChange}
-      />
-      <TextField
-        required
-        name="cost"
-        label="Cost"
-        type="text"
-        fullWidth
-        value={formData.cost}
-        onChange={handleChange}
+        value={values.description || ""}
+        onChange={(event) =>
+          setFieldValue(event.target.name, event.target.value)
+        }
+        error={touched.description && !!errors.description}
+        helperText={touched.description && errors.description}
       />
     </>
   );

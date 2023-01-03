@@ -12,7 +12,6 @@ import {
   Divider,
   IconButton,
   Badge,
-  Fab,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -107,7 +106,7 @@ const DashboardContent = () => {
           </IconButton>
           <Typography
             component="h1"
-            variant="h6"
+            variant="h4"
             color="inherit"
             noWrap
             sx={{ flexGrow: 1 }}
@@ -170,7 +169,7 @@ const DashboardContent = () => {
           {/* open dialog for adding */}
           <ListItemButton onClick={() => setOpenDialog(true)}>
             <ListItemIcon>
-              <AddIcon />
+              <AddIcon color="primary" fontSize="large" />
             </ListItemIcon>
             <ListItemText primary={"Add " + title} />
           </ListItemButton>
@@ -190,12 +189,13 @@ const DashboardContent = () => {
         }}
       >
         <Toolbar />
-        <Typography m={2} variant="h4">
+        <Typography m={2} variant="h5">
           {title}
         </Typography>
         <AdminDialog
           title={title}
           openDialog={openDialog}
+          setOpenDialog={setOpenDialog}
           onClose={() => setOpenDialog(false)}
         />
         <Copyright

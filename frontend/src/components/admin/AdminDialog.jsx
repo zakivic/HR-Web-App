@@ -7,52 +7,88 @@ import {
   DialogActions,
   Stack,
 } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 import { useState } from "react";
+import { Formik, Form } from "formik";
 
 import EmployeesForm from "./forms/EmployeesForm";
 import DepartmentForm from "./forms/DepartmentForm";
 import PerformanceForm from "./forms/PerformanceForm";
 import TrainingForm from "./forms/TrainingForm";
 
+import { trainingSchema } from "./schemas/trainingSchema";
+
 const AdminDialog = (props) => {
-  const { onClose, selectedValue, openDialog, title } = props;
-  const [formData, setFormData] = useState({});
+  const { onClose, setOpenDialog, openDialog, title } = props;
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleClose = () => {
     onClose();
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    // Submit the form data
-    console.log(formData);
   };
 
   return (
     <Dialog onClose={handleClose} open={openDialog} fullWidth>
       <DialogTitle id="simple-dialog-title">{title}</DialogTitle>
       <DialogContent dividers>
-        <Stack spacing={1.5}>
-          {title === "Employees" && (
-            <EmployeesForm formData={formData} setFormData={setFormData} />
+        <Formik
+          validationSchema={trainingSchema}
+          onSubmit={(values, { setSubmitting }) => {
+            console.log(values);
+            setSubmitting(false);
+            setIsSubmitting(false);
+          }}
+          onChange={() => setIsSubmitting(true)}
+        >
+          {({ values, errors, touched, setFieldValue }) => (
+            <Form>
+              <Stack spacing={1.5}>
+                {title === "Employees" && (
+                  <EmployeesForm
+                    values={values}
+                    errors={errors}
+                    touched={touched}
+                    setFieldValue={setFieldValue}
+                  />
+                )}
+                {title === "Department" && (
+                  <DepartmentForm
+                    values={values}
+                    errors={errors}
+                    touched={touched}
+                    setFieldValue={setFieldValue}
+                  />
+                )}
+                {title === "Performance" && (
+                  <PerformanceForm
+                    values={values}
+                    errors={errors}
+                    touched={touched}
+                    setFieldValue={setFieldValue}
+                  />
+                )}
+                {title === "Training" && (
+                  <TrainingForm
+                    values={values}
+                    errors={errors}
+                    touched={touched}
+                    setFieldValue={setFieldValue}
+                  />
+                )}
+              </Stack>
+            </Form>
           )}
-          {title === "Department" && (
-            <DepartmentForm formData={formData} setFormData={setFormData} />
-          )}
-          {title === "Performance" && (
-            <PerformanceForm formData={formData} setFormData={setFormData} />
-          )}
-          {title === "Training" && (
-            <TrainingForm formData={formData} setFormData={setFormData} />
-          )}
-        </Stack>
+        </Formik>
       </DialogContent>
       <DialogActions>
-        <ButtonGroup variant="outlined">
-          <Button>Cancel</Button>
-          <Button onClick={handleSubmit}>Submit</Button>
+        <ButtonGroup variant="contained">
+          <Button type="submit" size="large" disabled={isSubmitting}>
+            Submit
+          </Button>
+          <Button onClick={() => setOpenDialog(false)} size="small">
+            <CloseIcon />
+          </Button>
         </ButtonGroup>
       </DialogActions>
     </Dialog>
