@@ -27,6 +27,7 @@ import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
 import { useState } from "react";
 
 import Copyright from "../Copyright";
+import AdminCrudMenu from "./AdminCrudMenu";
 import AdminDialog from "./AdminDialog";
 
 const drawerWidth = 240;
@@ -74,6 +75,8 @@ const Drawer = styled(MuiDrawer, {
     }),
   },
 }));
+
+const mdTheme = createTheme();
 
 const DashboardContent = () => {
   const [open, setOpen] = useState(true);
@@ -208,7 +211,7 @@ const DashboardContent = () => {
           }}
         />
       </Box>
-    </Box>
+    </ThemeProvider>
   );
 };
 
