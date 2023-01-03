@@ -1,19 +1,11 @@
-import { TextField, Button } from "@mui/material";
-import { Formik, Form, Field } from "formik";
-import * as Yup from "yup";
+import { TextField } from "@mui/material";
+import { useState } from "react";
 
-const DepartmentForm = (props) => {
-  const { formData, setFormData } = props;
+const DepartmentForm = () => {
+  const [formData, setFormData] = useState({});
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
-
-  const validationSchema = Yup.object().shape({
-    name: Yup.string().required("Name is required"),
-    manager: Yup.string(),
-    employees: Yup.number().typeError("Employees must be a number"),
-  });
-
   return (
     <Formik
       initialValues={formData}

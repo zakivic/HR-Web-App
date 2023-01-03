@@ -13,6 +13,8 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
+import React, { useState } from "react";
+
 const ImageBox = styled(Box)({
   display: "flex",
   alignItems: "center",
@@ -20,8 +22,8 @@ const ImageBox = styled(Box)({
   border: "1px dashed grey",
 });
 
-const EmployeesForm = (props) => {
-  const { formData, setFormData } = props;
+const EmployeesForm = () => {
+  const [formData, setFormData] = useState({});
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };

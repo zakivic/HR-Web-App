@@ -3,8 +3,10 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
-const PerformanceForm = (props) => {
-  const { formData, setFormData } = props;
+import React, { useState } from "react";
+
+const PerformanceForm = () => {
+  const [formData, setFormData] = useState({});
   const handleChange = (event) => {
     setFormData({ ...formData, [event.target.name]: event.target.value });
   };
