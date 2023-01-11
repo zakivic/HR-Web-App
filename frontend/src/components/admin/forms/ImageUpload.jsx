@@ -9,7 +9,6 @@ import {
   Stack,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { Field } from "formik";
 
 const ImageBox = styled(Box)(({ theme }) => ({
   border: "dashed grey",
@@ -35,15 +34,14 @@ const errorBox = {
 };
 
 const ImageDropZone = (props) => {
-  const { field, form, label, required, setFieldValue, formControlProps } =
-    props;
+  const { field, form, label, required, setFieldValue } = props;
   const [file, setFile] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [status, setStatus] = useState("");
 
   const nbrOfFilesError = "You can only upload one file at a time";
   const filesTypeError = "Only image files can be uploaded";
-  console.log(form);
+
   const handleDrop = (e) => {
     e.preventDefault();
     setStatus("");
@@ -100,30 +98,26 @@ const ImageDropZone = (props) => {
     };
   };
 
-  let errorPool;
+  let errorPool = null;
 
   if (form.errors[field.name] && form.touched[field.name]) {
     errorPool = form.errors[field.name];
   } else if (errorMessage) {
     errorPool = errorMessage;
-  } else {
-    errorPool = null;
   }
 
-  let boxStyle;
-  switch (status) {
-    case "success":
-      boxStyle = successBox;
-      break;
-    case "error":
-      boxStyle = errorBox;
-      break;
-    default:
-      boxStyle = null;
+  let boxStyle = null;
+  if (status === "success") {
+    boxStyle = successBox;
+  } else if (
+    status === "error" ||
+    (form.errors[field.name] && form.touched[field.name])
+  ) {
+    boxStyle = errorBox;
   }
 
   return (
-    <FormControl required={required} {...formControlProps}>
+    <FormControl required={required}>
       <FormLabel>{label}</FormLabel>
       <FormGroup>
         <ImageBox
@@ -146,7 +140,6 @@ const ImageDropZone = (props) => {
           )}
         </ImageBox>
         {errorPool && <FormHelperText error>{errorPool}</FormHelperText>}
-        <Field type="hidden" name={field.name} />
       </FormGroup>
     </FormControl>
   );

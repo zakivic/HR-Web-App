@@ -11,6 +11,7 @@ import {
   MenuItem,
   Select,
   TextField,
+  FormHelperText,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -34,7 +35,7 @@ const initialValues = {
   nationalIDNumber: "",
   socialSecurityNumber: "",
   nationality: "",
-  gender: "Male",
+  gender: "",
   address: "",
   photo: "",
   bloodType: "",
@@ -139,6 +140,7 @@ const EmployeesForm = (props) => {
                     value={values.hireDate}
                     renderInput={(params) => (
                       <Field
+                        {...params}
                         required
                         name="hireDate"
                         label="Hire Date"
@@ -146,7 +148,6 @@ const EmployeesForm = (props) => {
                         as={TextField}
                         helperText={touched.hireDate && errors.hireDate}
                         onBlur={() => setFieldTouched("hireDate", true)}
-                        {...params}
                         error={Boolean(touched.hireDate && errors.hireDate)}
                       />
                     )}
@@ -192,21 +193,6 @@ const EmployeesForm = (props) => {
                   touched={touched}
                   setFieldTouched={setFieldTouched}
                 />
-                <FormControl>
-                  <InputLabel id="gender-label">Gender</InputLabel>
-                  <Field
-                    name="gender"
-                    as={Select}
-                    required
-                    labelId="gender-label"
-                    label="Gender"
-                    defaultValue="Male"
-                  >
-                    <MenuItem value="Male">Male</MenuItem>
-                    <MenuItem value="Female">Female</MenuItem>
-                    <MenuItem value="Other">Other</MenuItem>
-                  </Field>
-                </FormControl>
                 <CommonTextField
                   required={true}
                   fieldName="address"
@@ -216,14 +202,36 @@ const EmployeesForm = (props) => {
                   setFieldTouched={setFieldTouched}
                 />
                 <FormControl>
+                  <InputLabel id="gender-label">Gender</InputLabel>
+                  <Field
+                    name="gender"
+                    as={Select}
+                    required
+                    labelId="gender-label"
+                    label="Gender"
+                    defaultValue=""
+                    error={Boolean(touched.gender && errors.gender)}
+                  >
+                    <MenuItem value="">None</MenuItem>
+                    <MenuItem value="Male">Male</MenuItem>
+                    <MenuItem value="Female">Female</MenuItem>
+                    <MenuItem value="Other">Other</MenuItem>
+                  </Field>
+                  {touched.gender && errors.gender && (
+                    <FormHelperText error>{errors.gender}</FormHelperText>
+                  )}
+                </FormControl>
+                <FormControl>
                   <InputLabel id="blood-type-label">Blood Type</InputLabel>
                   <Field
                     as={Select}
                     labelId="blood-type-label"
                     label="Blood Type"
                     name="bloodType"
-                    defaultValue="A+"
+                    defaultValue=""
+                    error={Boolean(touched.bloodType && errors.bloodType)}
                   >
+                    <MenuItem value="">None</MenuItem>
                     <MenuItem value="A+">A+</MenuItem>
                     <MenuItem value="A-">A-</MenuItem>
                     <MenuItem value="B+">B+</MenuItem>
@@ -233,6 +241,9 @@ const EmployeesForm = (props) => {
                     <MenuItem value="AB+">AB+</MenuItem>
                     <MenuItem value="AB-">AB-</MenuItem>
                   </Field>
+                  {touched.bloodType && errors.bloodType && (
+                    <FormHelperText error>{errors.bloodType}</FormHelperText>
+                  )}
                 </FormControl>
                 <FormControl>
                   <InputLabel id="martialStatus-label">
@@ -244,13 +255,22 @@ const EmployeesForm = (props) => {
                     labelId="martialStatus-label"
                     label="Martial Status"
                     name="martialStatus"
-                    defaultValue="Single"
+                    defaultValue=""
+                    error={Boolean(
+                      touched.martialStatus && errors.martialStatus
+                    )}
                   >
+                    <MenuItem value="">None</MenuItem>
                     <MenuItem value="Single">Single</MenuItem>
                     <MenuItem value="Married">Married</MenuItem>
                     <MenuItem value="Divorced">Divorced</MenuItem>
                     <MenuItem value="Widowed">Widowed</MenuItem>
                   </Field>
+                  {touched.martialStatus && errors.martialStatus && (
+                    <FormHelperText error>
+                      {errors.martialStatus}
+                    </FormHelperText>
+                  )}
                 </FormControl>
                 <FormControl>
                   <InputLabel id="militaryStatus-label">
@@ -262,13 +282,22 @@ const EmployeesForm = (props) => {
                     labelId="militaryStatus-label"
                     label="Military Status"
                     name="militaryStatus"
-                    defaultValue="None"
+                    defaultValue=""
+                    error={Boolean(
+                      touched.militaryStatus && errors.militaryStatus
+                    )}
                   >
+                    <MenuItem value="">None</MenuItem>
                     <MenuItem value="Active">Active</MenuItem>
                     <MenuItem value="Reserve">Reserve</MenuItem>
                     <MenuItem value="Veteran">Veteran</MenuItem>
                     <MenuItem value="None">None</MenuItem>
                   </Field>
+                  {touched.militaryStatus && errors.militaryStatus && (
+                    <FormHelperText error>
+                      {errors.militaryStatus}
+                    </FormHelperText>
+                  )}
                 </FormControl>
                 <FormControl>
                   <InputLabel id="educationStatus-label">
@@ -280,14 +309,23 @@ const EmployeesForm = (props) => {
                     labelId="educationStatus-label"
                     label="Education Status"
                     name="educationStatus"
-                    defaultValue="High School"
+                    defaultValue=""
+                    error={Boolean(
+                      touched.educationStatus && errors.educationStatus
+                    )}
                   >
+                    <MenuItem value="">None</MenuItem>
                     <MenuItem value="High School">High School</MenuItem>
                     <MenuItem value="Associate">Associate</MenuItem>
                     <MenuItem value="Bachelor">Bachelor</MenuItem>
                     <MenuItem value="Master">Master</MenuItem>
                     <MenuItem value="Doctorate">Doctorate</MenuItem>
                   </Field>
+                  {touched.educationStatus && errors.educationStatus && (
+                    <FormHelperText error>
+                      {errors.educationStatus}
+                    </FormHelperText>
+                  )}
                 </FormControl>
                 <Field
                   name="photo"
