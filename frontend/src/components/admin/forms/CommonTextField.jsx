@@ -1,9 +1,9 @@
 import { TextField } from "@mui/material";
 import { Field } from "formik";
 
-const CommonTextField = (porps) => {
+const CommonTextField = (props) => {
   const { required, fieldName, fieldLabel, setFieldTouched, touched, errors } =
-    porps;
+    props;
   return (
     <Field
       required={required}

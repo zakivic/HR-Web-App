@@ -84,6 +84,7 @@ const TrainingForm = (props) => {
                     value={values.startDate}
                     renderInput={(params) => (
                       <Field
+                        {...params}
                         required
                         name="startDate"
                         label="Start Date"
@@ -91,7 +92,6 @@ const TrainingForm = (props) => {
                         as={TextField}
                         helperText={touched.startDate && errors.startDate}
                         onBlur={() => setFieldTouched("startDate", true)}
-                        {...params}
                         error={Boolean(touched.startDate && errors.startDate)}
                       />
                     )}
@@ -103,6 +103,7 @@ const TrainingForm = (props) => {
                     value={values.endDate}
                     renderInput={(params) => (
                       <Field
+                        {...params}
                         required
                         name="endDate"
                         label="End Date"
@@ -110,7 +111,6 @@ const TrainingForm = (props) => {
                         as={TextField}
                         helperText={touched.endDate && errors.endDate}
                         onBlur={() => setFieldTouched("endDate", true)}
-                        {...params}
                         error={Boolean(touched.endDate && errors.endDate)}
                       />
                     )}

@@ -202,11 +202,12 @@ const EmployeesForm = (props) => {
                   setFieldTouched={setFieldTouched}
                 />
                 <FormControl>
-                  <InputLabel id="gender-label">Gender</InputLabel>
+                  <InputLabel required id="gender-label">
+                    Gender
+                  </InputLabel>
                   <Field
                     name="gender"
                     as={Select}
-                    required
                     labelId="gender-label"
                     label="Gender"
                     defaultValue=""
@@ -222,7 +223,9 @@ const EmployeesForm = (props) => {
                   )}
                 </FormControl>
                 <FormControl>
-                  <InputLabel id="blood-type-label">Blood Type</InputLabel>
+                  <InputLabel required id="blood-type-label">
+                    Blood Type
+                  </InputLabel>
                   <Field
                     as={Select}
                     labelId="blood-type-label"
@@ -246,12 +249,11 @@ const EmployeesForm = (props) => {
                   )}
                 </FormControl>
                 <FormControl>
-                  <InputLabel id="martialStatus-label">
+                  <InputLabel required id="martialStatus-label">
                     Martial Status
                   </InputLabel>
                   <Field
                     as={Select}
-                    required
                     labelId="martialStatus-label"
                     label="Martial Status"
                     name="martialStatus"
@@ -273,7 +275,7 @@ const EmployeesForm = (props) => {
                   )}
                 </FormControl>
                 <FormControl>
-                  <InputLabel id="militaryStatus-label">
+                  <InputLabel required id="militaryStatus-label">
                     Military Status
                   </InputLabel>
                   <Field
@@ -300,12 +302,11 @@ const EmployeesForm = (props) => {
                   )}
                 </FormControl>
                 <FormControl>
-                  <InputLabel id="educationStatus-label">
+                  <InputLabel required id="educationStatus-label">
                     Education Status
                   </InputLabel>
                   <Field
                     as={Select}
-                    required
                     labelId="educationStatus-label"
                     label="Education Status"
                     name="educationStatus"
