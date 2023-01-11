@@ -1,78 +1,84 @@
-import { TextField } from "@mui/material";
-import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Button,
+  ButtonGroup,
+  DialogActions,
+  Stack,
+  TextField,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
-const DepartmentForm = () => {
-  const [formData, setFormData] = useState({});
-  const handleChange = (event) => {
-    setFormData({ ...formData, [event.target.name]: event.target.value });
-  };
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
+
+import CommonTextField from "./CommonTextField";
+
+const initialValues = { name: "", manager: "", employees: "" };
+
+const validationSchema = Yup.object({
+  name: Yup.string().required("Name is required"),
+  manager: Yup.string(),
+  employees: Yup.string(),
+});
+
+const DepartmentForm = (props) => {
+  const { onClose, openDialog, title } = props;
+
   return (
     <Formik
-      initialValues={formData}
+      initialValues={initialValues}
       validationSchema={validationSchema}
-      onSubmit={(values, { setSubmitting }) => {
-        // submit form data here
-        setSubmitting(false);
+      onSubmit={(values, actions) => {
+        console.log(values);
+        // make API call to create department
+        actions.resetForm();
+        onClose();
       }}
     >
-      {({ errors, touched, isSubmitting }) => (
-        <Form>
-          <Field
-            name="name"
-            render={({ field, form }) => (
-              <TextField
-                required
-                name={field.name}
-                label="Name"
-                type="text"
-                fullWidth
-                value={formData.name}
-                onChange={handleChange}
-                error={touched.name && errors.name ? true : false}
-                helperText={touched.name && errors.name ? errors.name : null}
-              />
-            )}
-          />
-          <Field
-            name="manager"
-            render={({ field, form }) => (
-              <TextField
-                name={field.name}
-                label="Manager"
-                type="text"
-                fullWidth
-                value={formData.manager}
-                onChange={handleChange}
-                error={touched.manager && errors.manager ? true : false}
-                helperText={
-                  touched.manager && errors.manager ? errors.manager : null
-                }
-              />
-            )}
-          />
-          <Field
-            name="employees"
-            render={({ field, form }) => (
-              <TextField
-                name={field.name}
-                label="Employees"
-                type="text"
-                fullWidth
-                value={formData.employees}
-                onChange={handleChange}
-                error={touched.employees && errors.employees ? true : false}
-                helperText={
-                  touched.employees && errors.employees
-                    ? errors.employees
-                    : null
-                }
-              />
-            )}
-          />
-          <Button type="submit" disabled={isSubmitting}>
-            Submit
-          </Button>
-        </Form>
+      {({ errors, touched, handleSubmit, setFieldTouched }) => (
+        <Dialog open={openDialog} fullWidth>
+          <DialogTitle id="simple-dialog-title">{title}</DialogTitle>
+          <DialogContent dividers>
+            <Form>
+              <Stack spacing={1.5}>
+                <CommonTextField
+                  required={true}
+                  fieldName="name"
+                  fieldLabel="Name"
+                  errors={errors}
+                  touched={touched}
+                  setFieldTouched={setFieldTouched}
+                />
+                <CommonTextField
+                  fieldName="manager"
+                  fieldLabel="Manager"
+                  errors={errors}
+                  touched={touched}
+                  setFieldTouched={setFieldTouched}
+                />
+                <CommonTextField
+                  fieldName="employees"
+                  fieldLabel="Employees"
+                  errors={errors}
+                  touched={touched}
+                  setFieldTouched={setFieldTouched}
+                />
+              </Stack>
+            </Form>
+          </DialogContent>
+          <DialogActions>
+            <ButtonGroup variant="contained">
+              <Button onClick={handleSubmit} size="large">
+                Submit
+              </Button>
+              <Button onClick={() => onClose()} size="small">
+                <CloseIcon />
+              </Button>
+            </ButtonGroup>
+          </DialogActions>
+        </Dialog>
       )}
     </Formik>
   );

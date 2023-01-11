@@ -22,13 +22,15 @@ import SchoolIcon from "@mui/icons-material/School";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import AddIcon from "@mui/icons-material/Add";
-import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 
 import { useState } from "react";
 
 import Copyright from "../Copyright";
-import AdminCrudMenu from "./AdminCrudMenu";
-import AdminDialog from "./AdminDialog";
+import EmployeesForm from "./forms/EmployeesForm";
+import DepartmentForm from "./forms/DepartmentForm";
+import PerformanceForm from "./forms/PerformanceForm";
+import TrainingForm from "./forms/TrainingForm";
 
 const drawerWidth = 240;
 
@@ -76,8 +78,6 @@ const Drawer = styled(MuiDrawer, {
   },
 }));
 
-const mdTheme = createTheme();
-
 const DashboardContent = () => {
   const [open, setOpen] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
@@ -85,6 +85,51 @@ const DashboardContent = () => {
   const toggleDrawer = () => {
     setOpen(!open);
   };
+
+  let dialog;
+  switch (title) {
+    case "Employees":
+      dialog = (
+        <EmployeesForm
+          title={title}
+          openDialog={openDialog}
+          onClose={() => setOpenDialog(false)}
+        />
+      );
+      break;
+    case "Department":
+      dialog = (
+        <DepartmentForm
+          title={title}
+          openDialog={openDialog}
+          setOpenDialog={setOpenDialog}
+          onClose={() => setOpenDialog(false)}
+        />
+      );
+      break;
+    case "Performance":
+      dialog = (
+        <PerformanceForm
+          title={title}
+          openDialog={openDialog}
+          setOpenDialog={setOpenDialog}
+          onClose={() => setOpenDialog(false)}
+        />
+      );
+      break;
+    case "Training":
+      dialog = (
+        <TrainingForm
+          title={title}
+          openDialog={openDialog}
+          setOpenDialog={setOpenDialog}
+          onClose={() => setOpenDialog(false)}
+        />
+      );
+      break;
+    default:
+      dialog = null;
+  }
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -195,12 +240,7 @@ const DashboardContent = () => {
         <Typography m={2} variant="h5">
           {title}
         </Typography>
-        <AdminDialog
-          title={title}
-          openDialog={openDialog}
-          setOpenDialog={setOpenDialog}
-          onClose={() => setOpenDialog(false)}
-        />
+        {dialog}
         <Copyright
           sx={{
             pt: 4,
