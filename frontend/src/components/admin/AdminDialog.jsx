@@ -35,8 +35,33 @@ import {
   performanceValidationSchema,
 } from "./schemas/performanceSchema";
 
+import { useCreateDepartmentMutation } from "../../features/departmentSlice";
+
 const AdminDialog = (props) => {
   const { onClose, openDialog, title } = props;
+  const [createDepartment] = useCreateDepartmentMutation();
+
+  const handleSubmit = async (values) => {
+    const data = getdata(values);
+    try {
+      const response = await createDepartment(data).unwrap();
+      console.log(response);
+      // Do something with the response data
+    } catch (error) {
+      // Handle the error
+      console.log(error);
+    }
+  };
+
+  // Remove empty fields from the Form values
+  const getdata = (values) => {
+    Object.entries(values).forEach(([key, value]) => {
+      if (!value) {
+        delete values[key];
+      }
+    });
+    return values;
+  };
 
   let initialValues;
   let validationSchema;
@@ -71,8 +96,9 @@ const AdminDialog = (props) => {
       validationSchema={validationSchema}
       enableReinitialize
       onSubmit={(values, actions) => {
-        console.log(values);
         // make API call to create department
+        handleSubmit(values);
+        // reset the form
         actions.resetForm();
         onClose();
       }}

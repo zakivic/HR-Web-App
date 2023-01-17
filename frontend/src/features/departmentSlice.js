@@ -10,7 +10,8 @@ const initialState = departmentAdapter.getInitialState();
 export const departmentApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getDepartments: builder.query({
-      query: () => "/departments",
+      query: ({ page, rowsPerPage }) =>
+        `/departments?page=${page}&rowsPerPage=${rowsPerPage}`,
       providesTags: ["Departments"],
     }),
     getDepartmentById: builder.query({

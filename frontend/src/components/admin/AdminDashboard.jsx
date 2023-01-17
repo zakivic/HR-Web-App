@@ -12,6 +12,7 @@ import {
   Divider,
   IconButton,
   Badge,
+  Stack,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
@@ -26,8 +27,9 @@ import { styled } from "@mui/material/styles";
 
 import { useState } from "react";
 
-import Copyright from "../Copyright";
+// import Copyright from "../Copyright";
 import AdminDialog from "./AdminDialog";
+import Departments from "./dataDisplay/Departments";
 
 const drawerWidth = 240;
 
@@ -189,15 +191,16 @@ const DashboardContent = () => {
         }}
       >
         <Toolbar />
-        <Typography m={2} variant="h5">
-          {title}
-        </Typography>
+        <Stack p={1}>
+          <Departments title={title} />
+        </Stack>
+
         <AdminDialog
           title={title}
           openDialog={openDialog}
           onClose={() => setOpenDialog(false)}
         />
-        <Copyright
+        {/* <Copyright
           sx={{
             pt: 4,
             position: "absolute",
@@ -205,7 +208,7 @@ const DashboardContent = () => {
             left: 0,
             right: 0,
           }}
-        />
+        /> */}
       </Box>
     </Box>
   );

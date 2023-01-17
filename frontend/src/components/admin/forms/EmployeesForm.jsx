@@ -10,13 +10,16 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-
 import { Field } from "formik";
+
 import CommonTextField from "./CommonTextField";
 import ImageDropZone from "./ImageUpload";
 
+import { useGetDepartmentsQuery } from "../../../features/departmentSlice";
+
 const EmployeesForm = (props) => {
   const { errors, touched, values, setFieldTouched, setFieldValue } = props;
+  const { isLoading, data: departments } = useGetDepartmentsQuery();
 
   return (
     <>
@@ -78,14 +81,32 @@ const EmployeesForm = (props) => {
           )}
         />
       </LocalizationProvider>
-      <CommonTextField
-        required={true}
-        fieldName="department"
-        fieldLabel="Department"
-        errors={errors}
-        touched={touched}
-        setFieldTouched={setFieldTouched}
-      />
+      <FormControl>
+        <InputLabel id="department-label">Department</InputLabel>
+        <Field
+          labelId="department-label"
+          as={Select}
+          id="department"
+          name="department"
+          defaultValue=""
+          error={Boolean(touched.department && errors.department)}
+          value={values.department?._id}
+          onChange={(e) => setFieldValue("department", e.target.value)}
+        >
+          {isLoading ? (
+            <MenuItem>Loading...</MenuItem>
+          ) : (
+            departments?.map((department) => (
+              <MenuItem key={department._id} value={department._id}>
+                {department.name}
+              </MenuItem>
+            ))
+          )}
+        </Field>
+        {touched.department && errors.department && (
+          <FormHelperText error>{errors.department}</FormHelperText>
+        )}
+      </FormControl>
       <CommonTextField
         required={true}
         fieldName="jobTitle"
