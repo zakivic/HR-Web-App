@@ -11,6 +11,8 @@ import CloseIcon from "@mui/icons-material/Close";
 
 import { Formik, Form } from "formik";
 
+import { useDispatch, useSelector } from "react-redux";
+
 // Forms
 import EmployeesForm from "./forms/EmployeesForm";
 import DepartmentForm from "./forms/DepartmentForm";
@@ -36,11 +38,27 @@ import {
 } from "./schemas/performanceSchema";
 
 import { useCreateDepartmentMutation } from "../../features/departmentSlice";
+import { useGetDepartmentByIdQuery } from "../../features/departmentSlice";
+import {
+  selectOpen,
+  resetState,
+  selectId,
+  selectCaller,
+} from "../../features/toggleDialogSlice";
+
+import { createInitialValues } from "../../features/generalUtils";
 
 const AdminDialog = (props) => {
-  const { onClose, openDialog, title } = props;
+  const { title } = props;
   const [createDepartment] = useCreateDepartmentMutation();
+  const dispatch = useDispatch();
+  const open = useSelector(selectOpen);
+  const caller = useSelector(selectCaller);
+  const departmentId = useSelector(selectId);
 
+  const { isLoading, data } = useGetDepartmentByIdQuery(departmentId);
+  console.log(data);
+  console.log(caller);
   const handleSubmit = async (values) => {
     const data = getdata(values);
     try {
@@ -71,7 +89,12 @@ const AdminDialog = (props) => {
       validationSchema = employeeValidationSchema;
       break;
     case "Department":
-      initialValues = departmentInitialValues;
+      caller !== "edit"
+        ? (initialValues = departmentInitialValues)
+        : (initialValues = createInitialValues(
+            data,
+            departmentValidationSchema
+          ));
       validationSchema = departmentValidationSchema;
       break;
     case "Training":
@@ -100,7 +123,7 @@ const AdminDialog = (props) => {
         handleSubmit(values);
         // reset the form
         actions.resetForm();
-        onClose();
+        dispatch(resetState());
       }}
     >
       {({
@@ -112,7 +135,7 @@ const AdminDialog = (props) => {
         setFieldValue,
         setFieldTouched,
       }) => (
-        <Dialog open={openDialog} fullWidth>
+        <Dialog open={open} fullWidth onClose={() => dispatch(resetState())}>
           <DialogTitle id="simple-dialog-title">{title}</DialogTitle>
           <DialogContent dividers>
             <Form>
@@ -161,8 +184,8 @@ const AdminDialog = (props) => {
               </Button>
               <Button
                 onClick={() => {
-                  onClose();
                   resetForm();
+                  dispatch(resetState());
                 }}
                 size="small"
               >

@@ -12,23 +12,21 @@ import {
   Stack,
   TablePagination,
   Checkbox,
-  IconButton,
 } from "@mui/material";
 import AppsIcon from "@mui/icons-material/Apps";
 import FormatAlignJustifyIcon from "@mui/icons-material/FormatAlignJustify";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+
 import { useGetDepartmentsQuery } from "../../../features/departmentSlice";
+import { handleSelected } from "../../../features/selectItemsSlice";
 
 const Departments = (props) => {
   const { title } = props;
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(6);
   const [view, setView] = useState("table");
-  const [selected, setSelected] = useState([]);
-
-  console.log(selected);
+  const dispatch = useDispatch();
 
   const { isLoading, data } = useGetDepartmentsQuery({
     page: page + 1,
@@ -49,16 +47,7 @@ const Departments = (props) => {
   };
 
   const handleCheck = (event, id) => {
-    const currentIndex = selected.indexOf(id);
-    const newSelected = [...selected];
-
-    if (currentIndex === -1) {
-      newSelected.push(id);
-    } else {
-      newSelected.splice(currentIndex, 1);
-    }
-
-    setSelected(newSelected);
+    dispatch(handleSelected(id));
   };
 
   return (
@@ -71,18 +60,6 @@ const Departments = (props) => {
         p={1}
       >
         <Typography variant="h5">{title}</Typography>
-        {selected.length > 0 && (
-          <Stack direction="row" spacing={1}>
-            {selected.length === 1 && (
-              <IconButton variant="contained" color="primary">
-                <EditIcon />
-              </IconButton>
-            )}
-            <IconButton variant="contained" color="secondary">
-              <DeleteIcon />
-            </IconButton>
-          </Stack>
-        )}
 
         <ToggleButtonGroup
           value={view}

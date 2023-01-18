@@ -42,12 +42,14 @@ export const departmentApiSlice = apiSlice.injectEndpoints({
         { type: "Departments", _id: "ALL" },
       ],
     }),
-    deleteDepartment: builder.mutation({
-      query: (id) => ({
-        url: `/departments/delete-department/${id}`,
+    deleteDepartments: builder.mutation({
+      query: (ids) => ({
+        url: `/departments/delete-departments`,
         method: "DELETE",
+        body: { ids },
       }),
-      invalidatesTags: (result, error, id) => [{ type: "Departments", id }],
+      invalidatesTags: (result, error, ids) =>
+        ids.map((_id) => ({ type: "Departments", _id })),
     }),
   }),
 });
@@ -57,5 +59,5 @@ export const {
   useGetDepartmentByIdQuery,
   useCreateDepartmentMutation,
   useUpdateDepartmentMutation,
-  useDeleteDepartmentMutation,
+  useDeleteDepartmentsMutation,
 } = departmentApiSlice;

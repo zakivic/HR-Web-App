@@ -22,7 +22,9 @@ import DomainIcon from "@mui/icons-material/Domain";
 import SchoolIcon from "@mui/icons-material/School";
 import EqualizerIcon from "@mui/icons-material/Equalizer";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import AddIcon from "@mui/icons-material/Add";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { styled } from "@mui/material/styles";
 
 import { useState } from "react";
@@ -30,6 +32,11 @@ import { useState } from "react";
 // import Copyright from "../Copyright";
 import AdminDialog from "./AdminDialog";
 import Departments from "./dataDisplay/Departments";
+import { useSelector, useDispatch } from "react-redux";
+
+import { useDeleteDepartmentsMutation } from "../../features/departmentSlice";
+import { toggle, setId, setCaller } from "../../features/toggleDialogSlice";
+import { resetSelected, selectSelected } from "../../features/selectItemsSlice";
 
 const drawerWidth = 240;
 
@@ -81,8 +88,30 @@ const DashboardContent = () => {
   const [open, setOpen] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [title, setTitle] = useState("Employees");
+  const dispatch = useDispatch();
+  const selected = useSelector(selectSelected);
+  const [deleteDepartments] = useDeleteDepartmentsMutation();
+
+  const handleOpenDialog = (caller) => {
+    if (caller === "edit") {
+      dispatch(setId(selected[0]));
+    }
+    dispatch(toggle());
+    dispatch(setCaller(caller));
+  };
+
   const toggleDrawer = () => {
     setOpen(!open);
+  };
+
+  const handleDelete = async () => {
+    try {
+      const response = await deleteDepartments(selected).unwrap();
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+    dispatch(resetSelected());
   };
 
   return (
@@ -169,12 +198,30 @@ const DashboardContent = () => {
           </ListItemButton>
           <Divider sx={{ my: 1 }} />
           {/* open dialog for adding */}
-          <ListItemButton onClick={() => setOpenDialog(true)}>
+          <ListItemButton onClick={() => handleOpenDialog("add")}>
             <ListItemIcon>
-              <AddIcon color="primary" fontSize="large" />
+              <AddCircleIcon color="primary" />
             </ListItemIcon>
             <ListItemText primary={"Add " + title} />
           </ListItemButton>
+          {selected.length > 0 && (
+            <>
+              {selected.length === 1 && (
+                <ListItemButton onClick={() => handleOpenDialog("edit")}>
+                  <ListItemIcon>
+                    <EditIcon color="primary" />
+                  </ListItemIcon>
+                  <ListItemText primary={"Edit " + title} />
+                </ListItemButton>
+              )}
+              <ListItemButton onClick={() => handleDelete()}>
+                <ListItemIcon>
+                  <DeleteIcon color="secondary" />
+                </ListItemIcon>
+                <ListItemText primary={"Delete " + title} />
+              </ListItemButton>
+            </>
+          )}
         </List>
       </Drawer>
       <Box
@@ -195,11 +242,7 @@ const DashboardContent = () => {
           <Departments title={title} />
         </Stack>
 
-        <AdminDialog
-          title={title}
-          openDialog={openDialog}
-          onClose={() => setOpenDialog(false)}
-        />
+        <AdminDialog title={title} />
         {/* <Copyright
           sx={{
             pt: 4,
