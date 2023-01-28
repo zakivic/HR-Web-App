@@ -6,6 +6,9 @@ import { validateDepartmentRequestBody } from "../middleware/validateReqBodyMidd
 const router = express.Router();
 
 // Get all departments
+router.get("/all", departmentController.getDepartments);
+
+// Get all departments by page
 router.get("/", departmentController.getAllDepartments);
 
 // Get a single department by ID
@@ -25,7 +28,7 @@ router.patch(
   departmentController.updateDepartment
 );
 
-// Delete an existing department by ID
-router.delete("/delete-department/:id", departmentController.deleteDepartment);
+// Delete existing departments by ID
+router.delete("/delete-departments", departmentController.deleteDepartment);
 
 export default router;

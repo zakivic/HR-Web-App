@@ -9,9 +9,8 @@ const departmentAdapter = createEntityAdapter({
 const initialState = departmentAdapter.getInitialState();
 export const departmentApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    getDepartments: builder.query({
-      query: ({ page, rowsPerPage }) =>
-        `/departments?page=${page}&rowsPerPage=${rowsPerPage}`,
+    getAllDepartments: builder.query({
+      query: () => "/departments/all",
       providesTags: ["Departments"],
     }),
     getDepartmentById: builder.query({
@@ -32,7 +31,7 @@ export const departmentApiSlice = apiSlice.injectEndpoints({
         ].filter(Boolean),
     }),
     updateDepartment: builder.mutation({
-      query: (data, id) => ({
+      query: ({ data, id }) => ({
         url: `/departments/update-department/${id}`,
         method: "PATCH",
         body: data,
@@ -55,8 +54,9 @@ export const departmentApiSlice = apiSlice.injectEndpoints({
 });
 
 export const {
-  useGetDepartmentsQuery,
+  useGetAllDepartmentsQuery,
   useGetDepartmentByIdQuery,
+  useLazyGetDepartmentByIdQuery,
   useCreateDepartmentMutation,
   useUpdateDepartmentMutation,
   useDeleteDepartmentsMutation,

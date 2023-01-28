@@ -37,8 +37,23 @@ import {
   performanceValidationSchema,
 } from "./schemas/performanceSchema";
 
-import { useCreateDepartmentMutation } from "../../features/departmentSlice";
-import { useGetDepartmentByIdQuery } from "../../features/departmentSlice";
+import {
+  useCreateDepartmentMutation,
+  useUpdateDepartmentMutation,
+} from "../../features/departmentSlice";
+import {
+  useCreateEmployeeMutation,
+  useUpdateEmployeeMutation,
+} from "../../features/employeesSlice";
+import {
+  useCreatePerformanceMutation,
+  useUpdatePerformanceMutation,
+} from "../../features/performanceSlice";
+import {
+  useCreateTrainingMutation,
+  useUpdateTrainingMutation,
+} from "../../features/trainingSlice";
+
 import {
   selectOpen,
   resetState,
@@ -49,21 +64,73 @@ import {
 import { createInitialValues } from "../../features/generalUtils";
 
 const AdminDialog = (props) => {
-  const { title } = props;
+  const { title, selectedData } = props;
   const [createDepartment] = useCreateDepartmentMutation();
+  const [updateDepartment] = useUpdateDepartmentMutation();
+  const [createEmployee] = useCreateEmployeeMutation();
+  const [updateEmployee] = useUpdateEmployeeMutation();
+  const [createTraining] = useCreateTrainingMutation();
+  const [updateTraining] = useUpdateTrainingMutation();
+  const [createPerformance] = useCreatePerformanceMutation();
+  const [updatePerformance] = useUpdatePerformanceMutation();
+  console.log(selectedData);
+
   const dispatch = useDispatch();
   const open = useSelector(selectOpen);
   const caller = useSelector(selectCaller);
-  const departmentId = useSelector(selectId);
+  const selectedId = useSelector(selectId);
 
-  const { isLoading, data } = useGetDepartmentByIdQuery(departmentId);
-  console.log(data);
-  console.log(caller);
   const handleSubmit = async (values) => {
     const data = getdata(values);
+    console.log(data);
     try {
-      const response = await createDepartment(data).unwrap();
-      console.log(response);
+      if (caller === "add") {
+        let response;
+        switch (title) {
+          case "Employees":
+            response = await createEmployee(data).unwrap();
+            break;
+          case "Department":
+            response = await createDepartment(data).unwrap();
+            break;
+          case "Training":
+            response = await createTraining(data).unwrap();
+            break;
+          case "Performance":
+            response = await createPerformance(data).unwrap();
+            break;
+        }
+      } else {
+        let response;
+        switch (title) {
+          case "Employees":
+            response = await updateEmployee({
+              data,
+              id: selectedId,
+            }).unwrap();
+            break;
+          case "Department":
+            response = await updateDepartment({
+              data,
+              id: selectedId,
+            }).unwrap();
+            break;
+          case "Training":
+            response = await updateTraining({
+              data,
+              id: selectedId,
+            }).unwrap();
+            break;
+          case "Performance":
+            response = await updatePerformance({
+              data,
+              id: selectedId,
+            }).unwrap();
+            break;
+        }
+      }
+
+      // console.log(response);
       // Do something with the response data
     } catch (error) {
       // Handle the error
@@ -85,24 +152,39 @@ const AdminDialog = (props) => {
   let validationSchema;
   switch (title) {
     case "Employees":
-      initialValues = employeeInitialValues;
+      caller !== "edit"
+        ? (initialValues = employeeInitialValues)
+        : (initialValues = createInitialValues(
+            selectedData,
+            employeeValidationSchema
+          ));
       validationSchema = employeeValidationSchema;
       break;
     case "Department":
       caller !== "edit"
         ? (initialValues = departmentInitialValues)
         : (initialValues = createInitialValues(
-            data,
+            selectedData,
             departmentValidationSchema
           ));
       validationSchema = departmentValidationSchema;
       break;
     case "Training":
-      initialValues = trainingInitialValues;
+      caller !== "edit"
+        ? (initialValues = trainingInitialValues)
+        : (initialValues = createInitialValues(
+            selectedData,
+            trainingValidationSchema
+          ));
       validationSchema = trainingValidationSchema;
       break;
     case "Performance":
-      initialValues = performanceInitialValues;
+      caller !== "edit"
+        ? (initialValues = performanceInitialValues)
+        : (initialValues = createInitialValues(
+            selectedData,
+            performanceValidationSchema
+          ));
       validationSchema = performanceValidationSchema;
       break;
 

@@ -25,7 +25,7 @@ router.patch(
   employeeController.updateEmployee
 );
 
-// Delete an existing employee by ID
-router.delete("/delete-employee/:id", employeeController.deleteEmployee);
+// Delete existing employees by ID
+router.delete("/delete-employees", employeeController.deleteEmployee);
 
 export default router;

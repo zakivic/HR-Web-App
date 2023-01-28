@@ -61,9 +61,7 @@ const ImageDropZone = (props) => {
       return;
     }
 
-    setFile(file);
-    setFieldValue(field.name, file);
-    setStatus("success");
+    setFileToBase64(file);
   };
 
   const handleDragOver = (e) => {
@@ -91,10 +89,20 @@ const ImageDropZone = (props) => {
         setStatus("error");
         return;
       }
-      setFile(file);
-      setFieldValue(field.name, file);
-      setStatus("success");
+
+      setFileToBase64(file);
       setErrorMessage("");
+    };
+  };
+
+  const setFileToBase64 = (file) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = () => {
+      const photoBase64 = reader.result;
+      setFile(file);
+      setFieldValue(field.name, photoBase64);
+      setStatus("success");
     };
   };
 

@@ -2,10 +2,35 @@ import mongoose from "mongoose";
 
 import Department from "../models/departmentModel.js";
 
-export const getAllDepartments = async (req, res) => {
+export const getDepartments = async (req, res) => {
   try {
     const departments = await Department.find();
     res.json(departments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+export const getAllDepartments = async (req, res) => {
+  try {
+    // Validate the query parameters
+    const pageNumber = req.query.page || 1;
+    const rowsPerPage = req.query.rowsPerPage || 6;
+    if (
+      isNaN(pageNumber) ||
+      isNaN(rowsPerPage) ||
+      pageNumber < 1 ||
+      rowsPerPage < 1
+    ) {
+      return res.status(400).json({ message: "Invalid query parameters" });
+    }
+    const totalCount = await Department.countDocuments();
+
+    const departments = await Department.find()
+      .skip((pageNumber - 1) * rowsPerPage)
+      .limit(rowsPerPage);
+
+    res.json({ departments, totalCount });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -80,17 +105,40 @@ export const updateDepartment = async (req, res) => {
 };
 
 export const deleteDepartment = async (req, res) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ message: "Invalid Department ID" });
+  const { ids } = req.body;
+
+  // validate ids array
+  if (!Array.isArray(ids)) {
+    return res
+      .status(400)
+      .json({ message: "Invalid ids format, array expected" });
   }
 
-  try {
-    const deletedDepartment = await Department.findByIdAndDelete(req.params.id);
-    if (deletedDepartment == null) {
-      return res.status(404).json({ message: "Cannot find department" });
+  let deletedCount = 0;
+  for (let i = 0; i < ids.length; i++) {
+    if (!mongoose.Types.ObjectId.isValid(ids[i])) {
+      return res.status(400).json({ message: `Invalid id: ${ids[i]}` });
     }
-    res.json({ message: "Deleted department" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+
+    // delete departments
+    try {
+      const deletedDepartment = await Department.findByIdAndDelete(ids[i]);
+      if (deletedDepartment != null) {
+        deletedCount++;
+      }
+    } catch (err) {
+      // handle error here, continue deleting the other departments
+      console.error(err);
+      if (err.name === "CastError") {
+        return res.status(400).json({ message: "Invalid id" });
+      } else {
+        return res.status(500).json({ message: "Error deleting departments" });
+      }
+    }
   }
+  if (deletedCount === 0) {
+    // if none of the departments were deleted, return error message
+    return res.status(500).json({ message: "Error deleting departments" });
+  }
+  res.status(200).json({ message: `Deleted ${deletedCount} departments` });
 };

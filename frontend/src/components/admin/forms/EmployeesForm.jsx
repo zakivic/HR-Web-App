@@ -15,11 +15,11 @@ import { Field } from "formik";
 import CommonTextField from "./CommonTextField";
 import ImageDropZone from "./ImageUpload";
 
-import { useGetDepartmentsQuery } from "../../../features/departmentSlice";
+import { useGetAllDepartmentsQuery } from "../../../features/departmentSlice";
 
 const EmployeesForm = (props) => {
   const { errors, touched, values, setFieldTouched, setFieldValue } = props;
-  const { isLoading, data: departments } = useGetDepartmentsQuery();
+  const { isLoading, data: departments } = useGetAllDepartmentsQuery();
 
   return (
     <>

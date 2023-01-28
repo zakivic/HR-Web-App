@@ -13,8 +13,8 @@ const TrainingForm = (props) => {
     <>
       <CommonTextField
         required={true}
-        fieldName="employee"
-        fieldLabel="Employee"
+        fieldName="name"
+        fieldLabel="Name"
         errors={errors}
         touched={touched}
         setFieldTouched={setFieldTouched}
@@ -68,8 +68,8 @@ const TrainingForm = (props) => {
       />
       <CommonTextField
         required={true}
-        fieldName="trainer"
-        fieldLabel="Trainer"
+        fieldName="instructor"
+        fieldLabel="Instructor"
         errors={errors}
         touched={touched}
         setFieldTouched={setFieldTouched}
@@ -78,6 +78,13 @@ const TrainingForm = (props) => {
         required={true}
         fieldName="location"
         fieldLabel="Location"
+        errors={errors}
+        touched={touched}
+        setFieldTouched={setFieldTouched}
+      />
+      <CommonTextField
+        fieldName="employees"
+        fieldLabel="Employees"
         errors={errors}
         touched={touched}
         setFieldTouched={setFieldTouched}

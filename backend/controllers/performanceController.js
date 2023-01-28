@@ -2,10 +2,35 @@ import mongoose from "mongoose";
 
 import Performance from "../models/performanceReviewModel.js";
 
+// export const getAllPerformanceReviews = async (req, res) => {
+//   try {
+//     const performanceReviews = await Performance.find();
+//     res.json(performanceReviews);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
 export const getAllPerformanceReviews = async (req, res) => {
   try {
-    const performanceReviews = await Performance.find();
-    res.json(performanceReviews);
+    // Validate the query parameters
+    const pageNumber = req.query.page || 1;
+    const rowsPerPage = req.query.rowsPerPage || 6;
+    if (
+      isNaN(pageNumber) ||
+      isNaN(rowsPerPage) ||
+      pageNumber < 1 ||
+      rowsPerPage < 1
+    ) {
+      return res.status(400).json({ message: "Invalid query parameters" });
+    }
+    const totalCount = await Performance.countDocuments();
+
+    const performanceReviews = await Performance.find()
+      .skip((pageNumber - 1) * rowsPerPage)
+      .limit(rowsPerPage);
+
+    res.json({ performanceReviews, totalCount });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -82,21 +107,66 @@ export const updatePerformanceReview = async (req, res) => {
 };
 
 export const deletePerformanceReview = async (req, res) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ message: "Invalid Performance ID" });
+  const { ids } = req.body;
+
+  // validate ids array
+  if (!Array.isArray(ids)) {
+    return res
+      .status(400)
+      .json({ message: "Invalid ids format, array expected" });
   }
 
-  try {
-    const deletedPerformanceReview = await Performance.findByIdAndDelete(
-      req.params.id
-    );
-    if (deletedPerformanceReview == null) {
-      return res
-        .status(404)
-        .json({ message: "Cannot find performance review" });
+  let deletedCount = 0;
+  for (let i = 0; i < ids.length; i++) {
+    if (!mongoose.Types.ObjectId.isValid(ids[i])) {
+      return res.status(400).json({ message: `Invalid id: ${ids[i]}` });
     }
-    res.json({ message: "Deleted performance review" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+
+    // delete performances
+    try {
+      const deletedPerformance = await Performance.findByIdAndDelete(ids[i]);
+      if (deletedPerformance != null) {
+        deletedCount++;
+      }
+    } catch (err) {
+      // handle error here, continue deleting the other performance
+      console.error(err);
+      if (err.name === "CastError") {
+        return res.status(400).json({ message: "Invalid id" });
+      } else {
+        return res
+          .status(500)
+          .json({ message: "Error deleting performance reviews" });
+      }
+    }
   }
+  if (deletedCount === 0) {
+    // if none of the performances were deleted, return error message
+    return res
+      .status(500)
+      .json({ message: "Error deleting performance reviews" });
+  }
+  res
+    .status(200)
+    .json({ message: `Deleted ${deletedCount} performance reviews` });
 };
+
+// export const deletePerformanceReview = async (req, res) => {
+//   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+//     return res.status(400).json({ message: "Invalid Performance ID" });
+//   }
+
+//   try {
+//     const deletedPerformanceReview = await Performance.findByIdAndDelete(
+//       req.params.id
+//     );
+//     if (deletedPerformanceReview == null) {
+//       return res
+//         .status(404)
+//         .json({ message: "Cannot find performance review" });
+//     }
+//     res.json({ message: "Deleted performance review" });
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };

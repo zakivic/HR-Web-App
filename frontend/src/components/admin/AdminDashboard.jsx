@@ -31,12 +31,16 @@ import { useState } from "react";
 
 // import Copyright from "../Copyright";
 import AdminDialog from "./AdminDialog";
-import Departments from "./dataDisplay/Departments";
 import { useSelector, useDispatch } from "react-redux";
 
 import { useDeleteDepartmentsMutation } from "../../features/departmentSlice";
+import { useLazyGetDepartmentByIdQuery } from "../../features/departmentSlice";
+import { useLazyGetEmployeeByIdQuery } from "../../features/employeesSlice";
+import { useLazyGetTrainingByIdQuery } from "../../features/trainingSlice";
+import { useLazyGetPerformanceByIdQuery } from "../../features/performanceSlice";
 import { toggle, setId, setCaller } from "../../features/toggleDialogSlice";
 import { resetSelected, selectSelected } from "../../features/selectItemsSlice";
+import DataDisplay from "./dataDisplay/DataDisplay";
 
 const drawerWidth = 240;
 
@@ -88,16 +92,56 @@ const DashboardContent = () => {
   const [open, setOpen] = useState(true);
   const [openDialog, setOpenDialog] = useState(false);
   const [title, setTitle] = useState("Employees");
+  const [selectedData, setSelectedData] = useState([]);
   const dispatch = useDispatch();
   const selected = useSelector(selectSelected);
   const [deleteDepartments] = useDeleteDepartmentsMutation();
+  const [getDepartmentById] = useLazyGetDepartmentByIdQuery();
+  const [getEmployeeById] = useLazyGetEmployeeByIdQuery();
+  const [getTrainingById] = useLazyGetTrainingByIdQuery();
+  const [getPerformanceById] = useLazyGetPerformanceByIdQuery();
 
   const handleOpenDialog = (caller) => {
     if (caller === "edit") {
+      fetchSelectedData();
       dispatch(setId(selected[0]));
     }
     dispatch(toggle());
     dispatch(setCaller(caller));
+  };
+
+  const fetchSelectedData = async () => {
+    let response;
+    switch (title) {
+      case "Employees":
+        response = await getEmployeeById(selected[0])
+          .unwrap()
+          .then((data) => {
+            setSelectedData(data);
+          });
+        break;
+      case "Department":
+        response = await getDepartmentById(selected[0])
+          .unwrap()
+          .then((data) => {
+            setSelectedData(data);
+          });
+        break;
+      case "Training":
+        response = await getTrainingById(selected[0])
+          .unwrap()
+          .then((data) => {
+            setSelectedData(data);
+          });
+        break;
+      case "Performance":
+        response = await getPerformanceById(selected[0])
+          .unwrap()
+          .then((data) => {
+            setSelectedData(data);
+          });
+        break;
+    }
   };
 
   const toggleDrawer = () => {
@@ -239,10 +283,11 @@ const DashboardContent = () => {
       >
         <Toolbar />
         <Stack p={1}>
-          <Departments title={title} />
+          {/* <Departments title={title} /> */}
+          <DataDisplay title={title} />
         </Stack>
 
-        <AdminDialog title={title} />
+        <AdminDialog title={title} selectedData={selectedData} />
         {/* <Copyright
           sx={{
             pt: 4,

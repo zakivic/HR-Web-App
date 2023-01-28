@@ -4,8 +4,23 @@ import Employee from "../models/employeeModel.js";
 
 export const getAllEmployees = async (req, res) => {
   try {
-    const employees = await Employee.find();
-    res.json(employees);
+    // Validate the query parameters
+    const pageNumber = req.query.page || 1;
+    const rowsPerPage = req.query.rowsPerPage || 6;
+    if (
+      isNaN(pageNumber) ||
+      isNaN(rowsPerPage) ||
+      pageNumber < 1 ||
+      rowsPerPage < 1
+    ) {
+      return res.status(400).json({ message: "Invalid query parameters" });
+    }
+    const totalCount = await Employee.countDocuments();
+
+    const employees = await Employee.find()
+      .skip((pageNumber - 1) * rowsPerPage)
+      .limit(rowsPerPage);
+    res.json({ employees, totalCount });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -100,17 +115,40 @@ export const updateEmployee = async (req, res) => {
 };
 
 export const deleteEmployee = async (req, res) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-    return res.status(400).json({ message: "Invalid Employee ID" });
+  const { ids } = req.body;
+
+  // validate ids array
+  if (!Array.isArray(ids)) {
+    return res
+      .status(400)
+      .json({ message: "Invalid ids format, array expected" });
   }
 
-  try {
-    const deletedEmployee = await Employee.findByIdAndDelete(req.params.id);
-    if (deletedEmployee == null) {
-      return res.status(404).json({ message: "Cannot find employee" });
+  let deletedCount = 0;
+  for (let i = 0; i < ids.length; i++) {
+    if (!mongoose.Types.ObjectId.isValid(ids[i])) {
+      return res.status(400).json({ message: `Invalid id: ${ids[i]}` });
     }
-    res.json({ message: "Deleted Employee" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+
+    // delete employee
+    try {
+      const deletedEmployee = await Employee.findByIdAndDelete(ids[i]);
+      if (deletedEmployee != null) {
+        deletedCount++;
+      }
+    } catch (err) {
+      // handle error here, continue deleting the other employees
+      console.error(err);
+      if (err.name === "CastError") {
+        return res.status(400).json({ message: "Invalid id" });
+      } else {
+        return res.status(500).json({ message: "Error deleting employees" });
+      }
+    }
   }
+  if (deletedCount === 0) {
+    // if none of the employees were deleted, return error message
+    return res.status(500).json({ message: "Error deleting employees" });
+  }
+  res.status(200).json({ message: `Deleted ${deletedCount} employees` });
 };

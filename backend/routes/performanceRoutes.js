@@ -27,7 +27,7 @@ router.patch(
 
 // Delete an existing performance review
 router.delete(
-  "/delete-performance/:id",
+  "/delete-performances",
   performanceController.deletePerformanceReview
 );
 

@@ -26,6 +26,6 @@ router.patch(
 );
 
 // DELETE an existing training
-router.delete("/delete-training/:id", TrainingController.deleteTraining);
+router.delete("/delete-trainings", TrainingController.deleteTraining);
 
 export default router;

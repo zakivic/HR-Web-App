@@ -1,4 +1,5 @@
 import CommonTextField from "./CommonTextField";
+import SearchForEmployee from "./SearchForEmployee";
 
 const DepartmentForm = (props) => {
   const { errors, touched, setFieldTouched } = props;
@@ -27,6 +28,7 @@ const DepartmentForm = (props) => {
         touched={touched}
         setFieldTouched={setFieldTouched}
       />
+      <SearchForEmployee />
     </>
   );
 };
