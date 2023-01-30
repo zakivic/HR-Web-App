@@ -44,7 +44,7 @@ export const performanceApiSlice = apiSlice.injectEndpoints({
     }),
     deletePerformance: builder.mutation({
       query: (ids) => ({
-        url: `/performance/delete-performance`,
+        url: `/performance/delete-performances`,
         method: "DELETE",
         body: { ids },
       }),

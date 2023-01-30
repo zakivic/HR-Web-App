@@ -44,7 +44,7 @@ export const trainingApiSlice = apiSlice.injectEndpoints({
     }),
     deleteTraining: builder.mutation({
       query: (ids) => ({
-        url: `/training/delete-training`,
+        url: `/training/delete-trainings`,
         method: "DELETE",
         body: { ids },
       }),

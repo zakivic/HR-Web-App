@@ -34,6 +34,9 @@ import AdminDialog from "./AdminDialog";
 import { useSelector, useDispatch } from "react-redux";
 
 import { useDeleteDepartmentsMutation } from "../../features/departmentSlice";
+import { useDeleteEmployeesMutation } from "../../features/employeesSlice";
+import { useDeleteTrainingMutation } from "../../features/trainingSlice";
+import { useDeletePerformanceMutation } from "../../features/performanceSlice";
 import { useLazyGetDepartmentByIdQuery } from "../../features/departmentSlice";
 import { useLazyGetEmployeeByIdQuery } from "../../features/employeesSlice";
 import { useLazyGetTrainingByIdQuery } from "../../features/trainingSlice";
@@ -96,6 +99,9 @@ const DashboardContent = () => {
   const dispatch = useDispatch();
   const selected = useSelector(selectSelected);
   const [deleteDepartments] = useDeleteDepartmentsMutation();
+  const [deleteEmployees] = useDeleteEmployeesMutation();
+  const [deleteTraining] = useDeleteTrainingMutation();
+  const [deletePerformance] = useDeletePerformanceMutation();
   const [getDepartmentById] = useLazyGetDepartmentByIdQuery();
   const [getEmployeeById] = useLazyGetEmployeeByIdQuery();
   const [getTrainingById] = useLazyGetTrainingByIdQuery();
@@ -150,7 +156,20 @@ const DashboardContent = () => {
 
   const handleDelete = async () => {
     try {
-      const response = await deleteDepartments(selected).unwrap();
+      let response;
+      switch (title) {
+        case "Employees":
+          response = await deleteEmployees(selected).unwrap();
+          break;
+        case "Department":
+          response = await deleteDepartments(selected).unwrap();
+          break;
+        case "Training":
+          response = await deleteTraining(selected).unwrap();
+        case "Performance":
+          response = await deletePerformance(selected).unwrap();
+          break;
+      }
       console.log(response);
     } catch (error) {
       console.log(error);

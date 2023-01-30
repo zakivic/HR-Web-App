@@ -1,14 +1,26 @@
+import {
+  Avatar,
+  Box,
+  Checkbox,
+  Chip,
+  FormControl,
+  InputLabel,
+  ListItemText,
+  MenuItem,
+  OutlinedInput,
+  Select,
+  Stack,
+  TablePagination,
+  Typography,
+} from "@mui/material";
+
 import { useTheme } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select from "@mui/material/Select";
-import Chip from "@mui/material/Chip";
+
+import { Field } from "formik";
+
 import { useState } from "react";
+
 import { useGetDataQuery } from "../../../features/dataFetchingSlice";
-import { Typography } from "@mui/material";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -21,19 +33,6 @@ const MenuProps = {
   },
 };
 
-const names = [
-  "Oliver Hansen",
-  "Van Henry",
-  "April Tucker",
-  "Ralph Hubbard",
-  "Omar Alexander",
-  "Carlos Abbott",
-  "Miriam Wagner",
-  "Bradley Wilkerson",
-  "Virginia Andrews",
-  "Kelly Snyder",
-];
-
 function getStyles(name, personName, theme) {
   return {
     fontWeight:
@@ -43,11 +42,34 @@ function getStyles(name, personName, theme) {
   };
 }
 
-const SearchForEmployee = () => {
+const formatEmployee = (employee) => ({
+  _id: employee._id,
+  name: `${employee.firstName} ${employee.lastName}`,
+  photo: employee.photo,
+});
+
+function mapSelectedNamesToIds(values, multi, formattedEmployees) {
+  const nameToIdMap = formattedEmployees.reduce((map, formattedEmployee) => {
+    map[formattedEmployee.name] = formattedEmployee._id;
+    return map;
+  }, {});
+
+  if (multi) {
+    return values.map((value) => nameToIdMap[value]);
+  } else {
+    console.log(values[0]);
+    return nameToIdMap[values];
+  }
+}
+
+const SearchForEmployee = (props) => {
+  const { multiSelect, fieldName, fieldLabel, values, setFieldValue } = props;
   const theme = useTheme();
   const [personName, setPersonName] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(6);
+  // Check the value of the flag
+  const multi = multiSelect || false;
 
   const {
     data,
@@ -63,7 +85,17 @@ const SearchForEmployee = () => {
     rowsPerPage,
   });
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
   let content;
+  let formattedEmployees;
   if (isUninitialized) {
     content = <p>Initializing request...</p>;
   } else if (isLoading) {
@@ -71,6 +103,7 @@ const SearchForEmployee = () => {
   } else if (isFetching) {
     content = <p>Fetching data...</p>;
   } else if (isSuccess) {
+    formattedEmployees = data?.employees.map(formatEmployee);
     if (data.totalCount === 0) {
       content = (
         <Typography m={1} color="error" variant="h6">
@@ -79,13 +112,19 @@ const SearchForEmployee = () => {
       );
     } else {
       console.log(data);
-      content = data.employees.map((employee) => (
+      content = formattedEmployees.map((employee) => (
         <MenuItem
           key={employee._id}
-          value={employee.firstName}
-          style={getStyles(employee.firstName, personName, theme)}
+          value={employee.name}
+          style={getStyles(employee.name, personName, theme)}
         >
-          {employee.firstName}
+          <Stack direction="row" spacing={1} alignItems="center">
+            {multi && (
+              <Checkbox checked={personName.indexOf(employee.name) > -1} />
+            )}
+            <Avatar alt={employee.name} src={employee.photo} />
+            <ListItemText primary={employee.name} />
+          </Stack>
         </MenuItem>
       ));
     }
@@ -97,20 +136,23 @@ const SearchForEmployee = () => {
     const {
       target: { value },
     } = event;
-    setPersonName(
-      // On autofill we get a stringified value.
-      typeof value === "string" ? value.split(",") : value
-    );
+    console.log(event);
+    setPersonName(multi ? value : [value]);
+    const valueAsId = mapSelectedNamesToIds(value, multi, formattedEmployees);
+    setFieldValue(fieldName, valueAsId, true);
   };
 
   return (
     <div>
       <FormControl sx={{ width: "100%" }}>
-        <InputLabel id="demo-multiple-chip-label">Employees</InputLabel>
-        <Select
+        <InputLabel id="demo-multiple-chip-label">{fieldLabel}</InputLabel>
+        <Field
           labelId="demo-multiple-chip-label"
-          id="demo-multiple-chip"
-          multiple
+          as={Select}
+          id="selectId"
+          multiple={multi}
+          name={fieldName}
+          defaultValue=""
           value={personName}
           onChange={handleChange}
           input={<OutlinedInput id="select-multiple-chip" label="Employees" />}
@@ -121,10 +163,36 @@ const SearchForEmployee = () => {
               ))}
             </Box>
           )}
+          // renderValue={(selected) => (
+          //   <Box
+          //     id="chipContainerId"
+          //     sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}
+          //   >
+          //     {renderChips(selected, handleDelete)}
+          //   </Box>
+          // )}
           MenuProps={MenuProps}
         >
           {content}
-        </Select>
+          <MenuItem>
+            {data?.totalCount && (
+              <TablePagination
+                rowsPerPageOptions={
+                  data?.totalCount < 6
+                    ? [data?.totalCount]
+                    : [6, 12, 18, 24, 30]
+                }
+                component="div"
+                count={data?.totalCount}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                sx={{ position: "sticky", top: 0 }}
+              />
+            )}
+          </MenuItem>
+        </Field>
       </FormControl>
     </div>
   );

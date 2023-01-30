@@ -235,7 +235,9 @@ const AdminDialog = (props) => {
                   <DepartmentForm
                     errors={errors}
                     touched={touched}
+                    values={values}
                     setFieldTouched={setFieldTouched}
+                    setFieldValue={setFieldValue}
                   />
                 )}
                 {title === "Training" && (
